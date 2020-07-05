@@ -93,6 +93,13 @@ public class ObstacleScript : MonoBehaviour
         if (other.gameObject.tag == "Obstacle")
         {
             other.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
+            Destroy(this.gameObject,2f);
+        }
+
+        if (other.gameObject.tag == "Player")
+        {
+            other.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
+            Destroy(this.gameObject, 2f);
         }
     }
 

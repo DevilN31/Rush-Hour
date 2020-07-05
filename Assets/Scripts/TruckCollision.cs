@@ -12,6 +12,7 @@ public class TruckCollision : MonoBehaviour {
             if (item.gameObject.tag == "Obstacle")
             {
                 item.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
+                Destroy(item.gameObject, 2);
             }
         }
     }
