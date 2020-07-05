@@ -1,0 +1,131 @@
+fileFormatVersion: 2
+guid: 6ccd2b78f424b574fbbf639d5ba339a1
+timeCreated: 1462522889
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: HoodOrnament-Horns
+    100002: PickuoTruck
+    100004: //RootNode
+    100006: Trailer001
+    100008: Tyre027
+    100010: Tyre028
+    100012: Tyre029
+    100014: Tyre030
+    100016: Tyre01
+    100018: Tyre02
+    100020: Tyre03
+    100022: Tyre04
+    400000: HoodOrnament-Horns
+    400002: PickuoTruck
+    400004: //RootNode
+    400006: Trailer001
+    400008: Tyre027
+    400010: Tyre028
+    400012: Tyre029
+    400014: Tyre030
+    400016: Tyre01
+    400018: Tyre02
+    400020: Tyre03
+    400022: Tyre04
+    2300000: HoodOrnament-Horns
+    2300002: PickuoTruck
+    2300004: Trailer001
+    2300006: Tyre027
+    2300008: Tyre028
+    2300010: Tyre029
+    2300012: Tyre030
+    2300014: //RootNode
+    2300016: Tyre01
+    2300018: Tyre02
+    2300020: Tyre03
+    2300022: Tyre04
+    3300000: HoodOrnament-Horns
+    3300002: PickuoTruck
+    3300004: Trailer001
+    3300006: Tyre027
+    3300008: Tyre028
+    3300010: Tyre029
+    3300012: Tyre030
+    3300014: //RootNode
+    3300016: Tyre01
+    3300018: Tyre02
+    3300020: Tyre03
+    3300022: Tyre04
+    4300000: PickuoTruck
+    4300002: Tyre029
+    4300004: Tyre028
+    4300006: Tyre027
+    4300008: Tyre030
+    4300010: Trailer001
+    4300012: HoodOrnament-Horns
+    4300014: PickupTruck
+    4300016: Tyre03
+    4300018: Tyre01
+    4300020: Tyre02
+    4300022: Tyre04
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

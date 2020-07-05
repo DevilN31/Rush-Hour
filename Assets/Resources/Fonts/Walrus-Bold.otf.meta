@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 651f7da91e4c76943b71b2996f74ea2a
+timeCreated: 1486376410
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Walrus
+  fontNames:
+  - Walrus
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
