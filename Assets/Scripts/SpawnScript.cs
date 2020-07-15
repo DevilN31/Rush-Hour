@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class SpawnScript : MonoBehaviour
@@ -11,7 +11,7 @@ public class SpawnScript : MonoBehaviour
     public float timeElapsed = 0;
 
     [Header("Spawn Lanes")]
-    public Transform[] allLanes;
+    public Transform[] allLanes; // NATI: This is NOT in use by the code.
     [Header("Obstacle Pattern Prefabs")]
     public GameObject[] allObstaclePatterns;
     [Header("Obstacle Parent Transform")]

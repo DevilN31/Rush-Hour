@@ -100,8 +100,8 @@ public class Manager : Singleton<Manager>
         currentCar = PlayerPrefs.GetInt("currentCar", 0);
         highScore = PlayerPrefs.GetInt("highScore", 0);
 
-        GameObject go = Instantiate(allCarPrefabs[currentCar]);
-        go.name = "Car";
+        GameObject go = Instantiate(allCarPrefabs[currentCar]);// WTF IS THIS?!?!?!?
+        go.name = "Car";// Let's change "WTF IS THIS" to "Car"
 
         gameOverCanvas.gameObject.SetActive(false);
         currentGameState = GameStates.MainMenu;
