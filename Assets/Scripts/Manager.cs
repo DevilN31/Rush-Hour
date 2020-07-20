@@ -214,9 +214,14 @@ public class Manager : Singleton<Manager>
         scoreText.text = "0";
         totalTimeElapsed = 0;
 
-        GameObject allObstacles = GameObject.Find("AllObstacles");
-        foreach (Transform child in allObstacles.transform)
-            Destroy(child.gameObject);
+        SpawnScript.instance.defaultSpawnTime = 0.75f;
+        SpawnScript.instance.waitForSpawn = 1f;
+
+        for (int i = 0; i < SpawnScript.instance.allLanes.Length; i++) 
+        {
+            foreach (Transform child in SpawnScript.instance.allLanes[i])
+                Destroy(child.gameObject); 
+        }
 
         //instantiate car
         GameObject car = Instantiate(allCarPrefabs[currentCar]);
