@@ -7,6 +7,10 @@ public class CarBehind : MonoBehaviour {
     bool bringNear = false;
     GameObject Car;
 
+    private void Start()
+    {
+        Car = GameObject.FindGameObjectWithTag("Player");
+    }
     public void Reset()
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, -26.0f);
@@ -25,10 +29,9 @@ public class CarBehind : MonoBehaviour {
     {
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
         {
-            Car = GameObject.Find("Car");
             if (bringNear)
             {
-                transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, Car.transform.position.z - 5.5f), Time.deltaTime * 20);
+                transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, Car.transform.position.z - 6.5f), Time.deltaTime * 20);
             }
             else
             {

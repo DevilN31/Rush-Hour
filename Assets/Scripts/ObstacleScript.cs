@@ -13,7 +13,6 @@ public class ObstacleScript : MonoBehaviour
     bool changingLane = false;
     float zPosLaneChange = 0;
     float changeLaneSpeed = 0;
-
     public GameObject indicator;
 
     void Start()

@@ -117,8 +117,9 @@ public class ObstacleTruck : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.I))
         {
             currentState = TruckStates.initiateSequence;
-            currentObstacle = 1;
+            currentObstacle = 0;
         }
+
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame || Manager.Instance.currentGameState == Manager.GameStates.GameOver)
         {
            
