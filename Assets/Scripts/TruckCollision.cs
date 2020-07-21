@@ -19,7 +19,7 @@ public class TruckCollision : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Car")
+        if (other.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerControl>().TakeHitByTruck();
         }

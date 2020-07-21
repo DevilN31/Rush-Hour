@@ -18,7 +18,11 @@ public class GameOverMenu : MonoBehaviour {
 
     public void RestartGame()
     {
-        Destroy(GameObject.Find("Car").gameObject);
+        if (GameObject.FindGameObjectWithTag("Player"))
+        {
+            Destroy(GameObject.FindGameObjectWithTag("Player").gameObject);
+        }
+
         GameObject.Find("ObstacleTruckController").GetComponent<ObstacleTruck>().ResetTruck();
 
         StartCoroutine(RestartAfterFrame());
@@ -28,11 +32,11 @@ public class GameOverMenu : MonoBehaviour {
     {
         yield return new WaitForEndOfFrame();
 
-        Camera.main.transform.GetComponent<CameraFollow>().Reset();
+        Manager.Instance.RestartGame();
+        Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
         SoundManager.Instance.StartMusic();
         Manager.Instance.currentGameState = Manager.GameStates.InGame;
         this.transform.gameObject.SetActive(false);
-        Manager.Instance.RestartGame();
     }
 
     public void LeaderboardPressed()
