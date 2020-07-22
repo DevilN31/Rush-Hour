@@ -52,7 +52,7 @@ public class SpawnScript : MonoBehaviour
             //if(defaultSpawnTime > 0.4) /// Limit
             //{
             //defaultSpawnTime -= 0.2f;
-            Debug.Log("This");
+           // Debug.Log("This");
             //addDifficulty = false;
             //waitForSpawn += 0.5f;               
             //}
@@ -60,7 +60,7 @@ public class SpawnScript : MonoBehaviour
 
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
         {
-            spawnTimer += Time.deltaTime;
+           // spawnTimer += Time.deltaTime;
             timeElapsed += Time.deltaTime;
 
             //if (Manager.Instance.obstacleSpeed == Manager.Instance.defaultSpeed)
@@ -87,7 +87,7 @@ public class SpawnScript : MonoBehaviour
                 StartCoroutine(SpawnObstacles(waitForSpawn));
             }
 
-            if (Manager.Instance.score % 100 == 0 && Manager.Instance.score != 0 && DoOnce) // NATI: Updates bool addDifficulty
+            if (Manager.Instance.score % 300 == 0) //&& Manager.Instance.score != 0 && DoOnce) // NATI: Updates bool addDifficulty
             {
                 UpdateWaitTime();
             }
@@ -113,11 +113,12 @@ public class SpawnScript : MonoBehaviour
 
     public void UpdateWaitTime()
     {
-        waitForSpawn += 0.5f;
+        if(waitForSpawn > 0.2f)
+        waitForSpawn -= 0.1f;
 
         Debug.Log("Add defficulty");
 
-        DoOnce = false;
+       // DoOnce = false;
     }
     IEnumerator SpawnObstacles(float spawnTimer) // NATI: new control function
     {

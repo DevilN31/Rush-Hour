@@ -10,7 +10,10 @@ public class EnvironmentControl : MonoBehaviour {
     float lightsSpawnTimer = 0;
 
     [Header("All building prefabs")]
-    public GameObject[] allBuildingsPrefabs;
+    public GameObject[] suburbBuildingsPrefabs;
+    public GameObject[] cityBuildingsPrefabs;
+    public GameObject[] desertBuildingsPrefabs;
+
     [Header("Buildings parent transform")]
     public Transform allBuildings;
     public Transform buildingsLeft; // Nati
@@ -41,14 +44,38 @@ public class EnvironmentControl : MonoBehaviour {
                 spawnTimer = 0;
                 */
 
-                int randomBuilding = Random.Range(0, allBuildingsPrefabs.Length);
-                GameObject building = Instantiate(allBuildingsPrefabs[randomBuilding],buildingsLeft.position,
-                    buildingsLeft.rotation,buildingsLeft);
+                if (Manager.Instance.score > 300 && Manager.Instance.score < 700)
+                {
+                    spawnCycle = 0.15f;
+                    int randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
+                    GameObject building = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+                        buildingsLeft.rotation, buildingsLeft);
 
-                randomBuilding = Random.Range(0, allBuildingsPrefabs.Length);
-                GameObject building2 = Instantiate(allBuildingsPrefabs[randomBuilding],buildingsRight.position,
-                    buildingsRight.rotation,buildingsRight);
+                    randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
+                    GameObject building2 = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsRight.position,
+                        buildingsRight.rotation, buildingsRight);
+                }
+                else if (Manager.Instance.score > 700)
+                {
+                    spawnCycle = 0.19f;
+                    int randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
+                    GameObject building = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+                        desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsLeft);
 
+                    randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
+                    GameObject building2 = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsRight.position,
+                        desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsRight);
+                }
+                else
+                {
+                    int randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
+                    GameObject building = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+                        buildingsLeft.rotation, buildingsLeft);
+
+                    randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
+                    GameObject building2 = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsRight.position,
+                        buildingsRight.rotation, buildingsRight);
+                }
                 spawnTimer = 0;
             }
 

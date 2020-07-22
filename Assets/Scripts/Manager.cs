@@ -231,7 +231,7 @@ public class Manager : Singleton<Manager>
         //totalTimeElapsed = 0;
 
         //SpawnScript.instance.defaultSpawnTime = 0.75f;
-        SpawnScript.instance.waitForSpawn = 1f;
+        SpawnScript.instance.waitForSpawn = 1.5f;
 
         for (int i = 0; i < SpawnScript.instance.allLanes.Length; i++) 
         {
