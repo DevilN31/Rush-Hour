@@ -79,6 +79,13 @@ public class CameraFollow : MonoBehaviour {
                 transform.position = Vector3.Lerp(transform.position, new Vector3(target.position.x, destination.y, transform.position.z), Time.deltaTime * 5);
             }
         }
+        else if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu)
+        {
+            if (transform.position.x != target.position.x)
+            {
+                transform.position = new Vector3(target.position.x, transform.position.y, transform.position.z);
+            }
+        }
 		
     }
 

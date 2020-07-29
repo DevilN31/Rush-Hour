@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 //using Boo.Lang;
 
 public class SpawnScript : MonoBehaviour
@@ -13,7 +14,12 @@ public class SpawnScript : MonoBehaviour
     public float timeElapsed = 0;
 
     [Header("Spawn Lanes")]
-    public Transform[] allLanes; 
+    public int numberOfLanes;
+    public List <Transform> allLanes;
+    public Transform allLanesTransform;
+    public GameObject leftLane;
+    public GameObject middleLane;
+    public GameObject rightLane;
     [Header("Obstacle Pattern Prefabs")]
     public GameObject[] allObstaclePatterns; // NATI: not in use
     public ObstacleScript[] allObstaclesPrefabs; // NATI: That's where all the obstacle prefabs are
@@ -42,6 +48,27 @@ public class SpawnScript : MonoBehaviour
         instance = this;
 
         canSpawn = true;
+
+        for(int i = 0;i < numberOfLanes; i++)
+        {
+            if (i > 0)
+            {
+                GameObject lane = Instantiate(middleLane, allLanesTransform.position, allLanesTransform.rotation, allLanesTransform);
+                lane.transform.position = new Vector3((allLanes[i - 1].position.x + 4), lane.transform.position.y, lane.transform.position.z);
+                
+                allLanes.Add(lane.transform);
+            }
+            else
+            {
+                GameObject lane = Instantiate(middleLane, allLanesTransform.position, allLanesTransform.rotation, allLanesTransform);
+                allLanes.Add(lane.transform);
+            }
+        }
+    }
+
+    private void Start()
+    {
+        
     }
 
     void Update()
@@ -122,11 +149,11 @@ public class SpawnScript : MonoBehaviour
     }
     IEnumerator SpawnObstacles(float spawnTimer) // NATI: new control function
     {
-        int numberOfLanes = Random.Range(0, allLanes.Length);  //Randon number of cars spawn
+        int numberOfLanes = Random.Range(0, allLanes.Count);  //Randon number of cars spawn
         for (int i = 0; i< numberOfLanes; i++)
         {
             int randomObstacle = Random.Range(0, allObstaclesPrefabs.Length);
-            int randomLane = Random.Range(0, allLanes.Length); //Randon number of lanes to select where obstacles will spawn
+            int randomLane = Random.Range(0, allLanes.Count); //Randon number of lanes to select where obstacles will spawn
 
             if ((allLanes[randomLane].childCount == 0))
             {

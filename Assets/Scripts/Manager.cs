@@ -39,7 +39,7 @@ public class Manager : Singleton<Manager>
         InGame,
         GameOver,
     }
-    [HideInInspector]
+   // [HideInInspector]
     public GameStates currentGameState = GameStates.MainMenu;
     [HideInInspector]
     public Vector3 obstacleSpeed = new Vector3(0, 0, -30);
@@ -233,10 +233,20 @@ public class Manager : Singleton<Manager>
         //SpawnScript.instance.defaultSpawnTime = 0.75f;
         SpawnScript.instance.waitForSpawn = 1.5f;
 
-        for (int i = 0; i < SpawnScript.instance.allLanes.Length; i++) 
+        for (int i = 0; i < SpawnScript.instance.allLanes.Count; i++) 
         {
+            /*
             foreach (Transform child in SpawnScript.instance.allLanes[i])
                 Destroy(child.gameObject); 
+            */
+            Debug.Log($"{SpawnScript.instance.allLanes[i].name} children count: {SpawnScript.instance.allLanes[i].childCount}");
+            if (SpawnScript.instance.allLanes[i].childCount > 1)
+            {
+                for (int j = 1; j < SpawnScript.instance.allLanes[i].childCount; j++)
+                {
+                    Destroy(SpawnScript.instance.allLanes[i].GetChild(j).gameObject);
+                }
+            }
         }
 
         //instantiate car

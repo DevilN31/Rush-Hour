@@ -110,6 +110,7 @@ public class ObstacleTruck : MonoBehaviour {
         currentState = TruckStates.idle;
         spawnTime = Random.Range(minTime, maxTime);
         moveTruck = false;
+        redLine.SetActive(false);
     }
 	// Update is called once per frame
 	void Update ()

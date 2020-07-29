@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class PlayerControl : MonoBehaviour {
 
-    public Transform[] allLanes;
+    public List<Transform> allLanes;
     private float speed = 20.0f;
 
-    int currentLane = 2;
+    public int currentLane = 0;
     private Vector3 destination = Vector3.zero;
 
     public Animator animator;
@@ -84,6 +84,11 @@ public class PlayerControl : MonoBehaviour {
         StopIndicators();
         cameraFollow = Camera.main.GetComponent<CameraFollow>();
         cameraFollow.ResetCamera();
+        
+        allLanes = SpawnScript.instance.allLanes;
+        currentLane = allLanes.Count / 2;
+        transform.position = new Vector3(allLanes[currentLane].position.x,transform.position.y,transform.position.z);
+
     }
 
     void TakeHit()
@@ -330,8 +335,10 @@ public class PlayerControl : MonoBehaviour {
             {
                 BlinkRight();
                 //go right
+                if(currentLane < SpawnScript.instance.allLanes.Count - 1)
                 currentLane++;
-                if (currentLane <= 4)
+
+                if (currentLane <= SpawnScript.instance.allLanes.Count-1)
                 {
                     animator.SetTrigger("RotateRight");
                 }
