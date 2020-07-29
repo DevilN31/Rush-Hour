@@ -12,14 +12,14 @@ public class TruckCollision : MonoBehaviour {
             if (item.gameObject.tag == "Obstacle")
             {
                 item.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
-                Destroy(item.gameObject, 2);
+                Destroy(item.gameObject, 1);
             }
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Car")
+        if (other.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerControl>().TakeHitByTruck();
         }

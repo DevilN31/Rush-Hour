@@ -19,38 +19,26 @@ public class CameraFollow : MonoBehaviour {
     public CameraStates currentState = CameraStates.idle;
 
     private bool isCoroutineRunning = false;
-    
-    void Start()
+
+    void Awake()
     {
         originalPosition = transform.position;
+        Debug.Log(originalPosition);
     }
 
-    public void Reset()
-    {
-        if (target != null)
-        {
-            currentState = CameraStates.idle;
-            isCoroutineRunning = false;
-            transform.position = originalPosition;
-        }
-
-        
-    }
-	// Update is called once per frame
 	void Update ()
     {
-
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
         {
-            if (target == null)
-            {
-                target = GameObject.Find("Car").transform;
-            }
+            //if (target == null)
+            //{
+            //    target = GameObject.FindGameObjectWithTag("Player").transform;
+            //}
 
             //Camera x movement follow target
             if (target)
             {
-                float step = 10 * Time.deltaTime;
+                float step = 15 * Time.deltaTime;
                 transform.position = Vector3.MoveTowards(transform.position, new Vector3(target.position.x, transform.position.y, transform.position.z), step);
             }
 
@@ -91,7 +79,29 @@ public class CameraFollow : MonoBehaviour {
                 transform.position = Vector3.Lerp(transform.position, new Vector3(target.position.x, destination.y, transform.position.z), Time.deltaTime * 5);
             }
         }
+        else if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu)
+        {
+            if (transform.position.x != target.position.x)
+            {
+                transform.position = new Vector3(target.position.x, transform.position.y, transform.position.z);
+            }
+        }
 		
+    }
+
+    public void ResetCamera()
+    {
+        if (target == null)
+        {
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+
+        if (target != null)
+        {
+            currentState = CameraStates.idle;
+            isCoroutineRunning = false;
+            transform.position = originalPosition;
+        }
     }
 
     IEnumerator CameraDelay()

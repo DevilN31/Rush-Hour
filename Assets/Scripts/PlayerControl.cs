@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class PlayerControl : MonoBehaviour {
 
-    public Transform[] allLanes;
+    public List<Transform> allLanes;
     private float speed = 20.0f;
 
-    int currentLane = 2;
+    public int currentLane = 0;
     private Vector3 destination = Vector3.zero;
 
     public Animator animator;
@@ -33,33 +33,46 @@ public class PlayerControl : MonoBehaviour {
 
     private bool isGameOver = false;
 
-    public GameObject redFlash;
-    GameObject spawnedRedFlash;
+    //public GameObject redFlash;
+    //GameObject spawnedRedFlash;
 
     bool isShaking = false;
 
     CarBehind carBehind;
     ParticleSystem accidentSmoke;
     ParticleSystem.EmissionModule accEm;
-    void Awake()
-    {
-    }
+
+    Rigidbody RB;
+
+    public float TorqueX, TorqueY, TorqueZ;
+
+    public float ForceX, ForceY, ForceZ;
+
     void Start()
     {
-        cameraFollow = Camera.main.GetComponent<CameraFollow>();
-        cameraFollow.Reset();
+        RB = GetComponent<Rigidbody>();
+        RB.constraints = RigidbodyConstraints.FreezeAll;
+
+        RB.maxAngularVelocity = 150f;
+
         leftIndicator = transform.Find("LeftIndicator");
         rightIndicator = transform.Find("RightIndicator");
-        brakeLights = transform.Find("BrakeLights");
+        //brakeLights = transform.Find("BrakeLights");
         windParticleSystem = GameObject.Find("WindParticles").GetComponent<ParticleSystem>();
         em = windParticleSystem.emission;
         em.enabled = false;
         healthCanvas = GameObject.Find("HealthCanvas");
         MainMenuCanvas = GameObject.Find("MainMenuCanvas");
-        spawnedRedFlash = Instantiate(redFlash);
-        spawnedRedFlash.SetActive(false);
-        spawnedRedFlash.transform.SetParent(transform);
-        carBehind = GameObject.Find("CarBehind").GetComponent<CarBehind>() ;
+
+        if (Manager.FirstGame)
+        {
+            Manager.Instance.scoreText.gameObject.SetActive(false);
+        }
+
+        //spawnedRedFlash = Instantiate(redFlash);
+        //spawnedRedFlash.SetActive(false);
+        //spawnedRedFlash.transform.SetParent(transform);
+        carBehind = GameObject.Find("Car Behind - New").GetComponent<CarBehind>() ;
         carBehind.Reset();
 
         accidentSmoke = transform.Find("AccidentSmoke").GetComponent<ParticleSystem>();
@@ -69,6 +82,12 @@ public class PlayerControl : MonoBehaviour {
         health = Manager.Instance.defaultHealth;
 
         StopIndicators();
+        cameraFollow = Camera.main.GetComponent<CameraFollow>();
+        cameraFollow.ResetCamera();
+        
+        allLanes = SpawnScript.instance.allLanes;
+        currentLane = allLanes.Count / 2;
+        transform.position = new Vector3(allLanes[currentLane].position.x,transform.position.y,transform.position.z);
 
     }
 
@@ -79,7 +98,7 @@ public class PlayerControl : MonoBehaviour {
         if (health >= 0)
         {
             accEm.enabled = true;
-            StartCoroutine(Flash());
+            //StartCoroutine(Flash());
             SoundManager.Instance.PlayCarHitMirror();
             healthCanvas.transform.GetChild(health).gameObject.SetActive(true);
         }
@@ -95,23 +114,24 @@ public class PlayerControl : MonoBehaviour {
         {
             SoundManager.Instance.PlayCarFinalHit();
             Destroy(this.transform.Find("Platform").gameObject);
+            RB.constraints = RigidbodyConstraints.None;
             this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y + 0.3f, this.transform.position.z);
-            StartCoroutine(WaitForFrame());
+            CollideLoseGame();
             StartCoroutine(GameOverDelay());
 
-            //ShowGameOver();
+            ShowGameOver();
         }
     }
 
-    IEnumerator WaitForFrame()
+    private void CollideLoseGame()
     {
-        yield return new WaitForEndOfFrame();
         Manager.Instance.currentGameState = Manager.GameStates.GameOver;
-        this.gameObject.AddComponent<BoxCollider>();
-        this.transform.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-        this.transform.GetComponent<Rigidbody>().useGravity = true;
-        this.transform.GetComponent<Rigidbody>().AddForce(new Vector3(0, 10000, 10000) , ForceMode.Impulse);
-        this.transform.GetComponent<Rigidbody>().AddTorque(new Vector3(2000, 2000, 0), ForceMode.Impulse);
+        gameObject.AddComponent<BoxCollider>();
+        RB.constraints = RigidbodyConstraints.None;
+        RB.useGravity = true;
+
+        RB.AddForce(new Vector3(ForceX, ForceY, ForceZ) , ForceMode.Impulse);
+        RB.AddTorque(new Vector3(TorqueX, TorqueY, TorqueZ), ForceMode.Impulse);
     }
 
     public void TakeHitByTruck()
@@ -125,7 +145,7 @@ public class PlayerControl : MonoBehaviour {
             SoundManager.Instance.PlayCarFinalHit();
             Destroy(platform.gameObject);
             this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y + 0.3f, this.transform.position.z);
-            StartCoroutine(WaitForFrame());
+            CollideLoseGame();
             StartCoroutine(GameOverDelay());
         }
         
@@ -138,7 +158,7 @@ public class PlayerControl : MonoBehaviour {
         ShowGameOver();
         yield return new WaitForSeconds(0.5f);
 
-        //Destroy(this.gameObject);
+        Destroy(gameObject);
 
     }
 
@@ -153,18 +173,18 @@ public class PlayerControl : MonoBehaviour {
 
     }
 
-    IEnumerator Flash()
-    {
-        if (!isShaking)
-        {
-            isShaking = true;
-            StartCoroutine(StopShake());
-        }
-        spawnedRedFlash.SetActive(true);
-        yield return new WaitForSeconds(0.1f);
-        spawnedRedFlash.SetActive(false);
+    //IEnumerator Flash()
+    //{
+    //    if (!isShaking)
+    //    {
+    //        isShaking = true;
+    //        StartCoroutine(StopShake());
+    //    }
+    //    //spawnedRedFlash.SetActive(true);
+    //    //yield return new WaitForSeconds(0.1f);
+    //    //spawnedRedFlash.SetActive(false);
         
-    }
+    //}
 
     void FixedUpdate()
     {
@@ -184,7 +204,7 @@ public class PlayerControl : MonoBehaviour {
     void ShowGameOver()
     {
         
-        Manager.Instance.ShowInterstitial();
+        //Manager.Instance.ShowInterstitial();
         healthCanvas.transform.GetChild(0).gameObject.SetActive(false);
         healthCanvas.transform.GetChild(1).gameObject.SetActive(false);
         healthCanvas.transform.GetChild(2).gameObject.SetActive(false);
@@ -219,21 +239,21 @@ public class PlayerControl : MonoBehaviour {
         leftIndicator.gameObject.SetActive(false);
     }
 
-  
-    void CheckBrakeLights()
-    {
-        if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear )
-        {
-            brakeLights.Find("LeftBrakePointLight/LeftBrake").gameObject.SetActive(true);
-            brakeLights.Find("RightBrakePointLight/RightBrake").gameObject.SetActive(true);
-        }
-        else
-        {
-            brakeLights.Find("LeftBrakePointLight/LeftBrake").gameObject.SetActive(false);
-            brakeLights.Find("RightBrakePointLight/RightBrake").gameObject.SetActive(false);
 
-        }
-    }
+    //void CheckBrakeLights()
+    //{
+    //    if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
+    //    {
+    //        brakeLights.Find("LeftBrakePointLight/LeftBrake").gameObject.SetActive(true);
+    //        brakeLights.Find("RightBrakePointLight/RightBrake").gameObject.SetActive(true);
+    //    }
+    //    else
+    //    {
+    //        brakeLights.Find("LeftBrakePointLight/LeftBrake").gameObject.SetActive(false);
+    //        brakeLights.Find("RightBrakePointLight/RightBrake").gameObject.SetActive(false);
+
+    //    }
+    //}
 
     void CheckParticleSystem()
     {
@@ -249,7 +269,9 @@ public class PlayerControl : MonoBehaviour {
 
     void StartGame()
     {
+        Manager.FirstGame = false;
         MainMenuCanvas.SetActive(false);
+        Manager.Instance.scoreText.gameObject.SetActive(true);
         SoundManager.Instance.PlaySwipeUpDown();
         Manager.Instance.currentGameState = Manager.GameStates.InGame;
     }
@@ -263,10 +285,11 @@ public class PlayerControl : MonoBehaviour {
                 StartGame();
             }
         }
+
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
         {
-            //CheckParticleSystem();
-            CheckBrakeLights();
+            CheckParticleSystem();
+            //CheckBrakeLights();
 
             if (Input.GetKeyDown(KeyCode.S) || Manager.Instance.moveDir == Manager.SwipeStates.Down)
             {
@@ -284,7 +307,7 @@ public class PlayerControl : MonoBehaviour {
             }
             else if ((Input.GetKeyDown(KeyCode.W) || Manager.Instance.moveDir == Manager.SwipeStates.Up) && Manager.Instance.obstacleSpeed != Manager.Instance.slowSpeed)
             {
-                //em.enabled = true;
+                em.enabled = true;
                 cameraFollow.currentState = CameraFollow.CameraStates.startSendFar;
                 Manager.Instance.obstacleSpeed = Manager.Instance.fastSpeed;
                 SoundManager.Instance.PlaySwipeUpDown();
@@ -312,8 +335,10 @@ public class PlayerControl : MonoBehaviour {
             {
                 BlinkRight();
                 //go right
+                if(currentLane < SpawnScript.instance.allLanes.Count - 1)
                 currentLane++;
-                if (currentLane <= 4)
+
+                if (currentLane <= SpawnScript.instance.allLanes.Count-1)
                 {
                     animator.SetTrigger("RotateRight");
                 }
@@ -342,6 +367,4 @@ public class PlayerControl : MonoBehaviour {
             }
         }
     }
-
-
 }

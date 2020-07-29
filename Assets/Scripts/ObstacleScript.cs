@@ -13,7 +13,6 @@ public class ObstacleScript : MonoBehaviour
     bool changingLane = false;
     float zPosLaneChange = 0;
     float changeLaneSpeed = 0;
-
     public GameObject indicator;
 
     void Start()
@@ -22,7 +21,7 @@ public class ObstacleScript : MonoBehaviour
 
         rb = transform.GetComponent<Rigidbody>();
         rb.velocity = carVelocity;
-
+        
         if (canChangeLane == 1)
             destXPos = transform.localPosition.x - 4;
         else if (canChangeLane == 2)
@@ -39,6 +38,7 @@ public class ObstacleScript : MonoBehaviour
             InvokeRepeating("BlinkIndicator", 0, 0.2f);
 
         }
+        
     }
 
     void BlinkIndicator()
@@ -93,13 +93,13 @@ public class ObstacleScript : MonoBehaviour
         if (other.gameObject.tag == "Obstacle")
         {
             other.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
-            Destroy(this.gameObject,2f);
+            Destroy(this.gameObject,1f);
         }
 
         if (other.gameObject.tag == "Player")
         {
             other.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
-            Destroy(this.gameObject, 2f);
+            Destroy(this.gameObject, 1f);
         }
     }
 
