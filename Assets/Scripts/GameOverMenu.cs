@@ -35,7 +35,7 @@ public class GameOverMenu : MonoBehaviour {
         Manager.Instance.RestartGame();
         Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
         SoundManager.Instance.StartMusic();
-        Manager.Instance.currentGameState = Manager.GameStates.InGame;
+        //Manager.Instance.currentGameState = Manager.GameStates.InGame;
         this.transform.gameObject.SetActive(false);
     }
 
