@@ -49,7 +49,7 @@ public class ObstacleTruck : MonoBehaviour {
     public void SetInitParameters()
     {
         currentState = TruckStates.initiateSequence;
-        currentLane = Random.Range(0, 4);
+        currentLane = Random.Range(0, SpawnScript.instance.allLanes.Count - 1);
         currentObstacle = Random.Range(0, 2);
         truckSpeed = 0.4f;
 
@@ -69,6 +69,11 @@ public class ObstacleTruck : MonoBehaviour {
             }
         }
 
+        fireTruck.transform.position = new Vector3(SpawnScript.instance.allLanes[currentLane].position.x, fireTruck.transform.position.y, fireTruck.transform.position.z);
+        policeCar.transform.position = new Vector3(SpawnScript.instance.allLanes[currentLane].position.x, policeCar.transform.position.y, policeCar.transform.position.z);
+        redLine.transform.position = new Vector3(SpawnScript.instance.allLanes[currentLane].position.x, redLine.transform.position.y, redLine.transform.position.z);
+
+        /*
         if (currentLane == 0)
         {
             fireTruck.transform.position = new Vector3(-8, fireTruck.transform.position.y, fireTruck.transform.position.z);
@@ -99,6 +104,7 @@ public class ObstacleTruck : MonoBehaviour {
             policeCar.transform.position = new Vector3(8, policeCar.transform.position.y, policeCar.transform.position.z);
             redLine.transform.position = new Vector3(8, redLine.transform.position.y, redLine.transform.position.z);
         }
+        */
     }
 	
     public void ResetTruck()

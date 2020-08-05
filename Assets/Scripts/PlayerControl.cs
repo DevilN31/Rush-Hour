@@ -336,7 +336,7 @@ public class PlayerControl : MonoBehaviour {
                 {
                     animator.SetTrigger("RotateLeft");
                 }
-                currentLane = Mathf.Clamp(currentLane, 0, 4);
+                currentLane = Mathf.Clamp(currentLane, 0, SpawnScript.instance.allLanes.Count - 1);
 
                 destination = allLanes[currentLane].position;
                 destination = new Vector3(destination.x, transform.position.y, transform.position.z);
@@ -348,14 +348,13 @@ public class PlayerControl : MonoBehaviour {
             {
                 BlinkRight();
                 //go right
-                if(currentLane < SpawnScript.instance.allLanes.Count - 1)
                 currentLane++;
 
                 if (currentLane <= SpawnScript.instance.allLanes.Count-1)
                 {
                     animator.SetTrigger("RotateRight");
                 }
-                currentLane = Mathf.Clamp(currentLane, 0, 4);
+                currentLane = Mathf.Clamp(currentLane, 0, SpawnScript.instance.allLanes.Count - 1);
 
                 destination = allLanes[currentLane].position;
                 destination = new Vector3(destination.x, transform.position.y, transform.position.z);
