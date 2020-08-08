@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentControl : MonoBehaviour {
+public class EnvironmentControl : MonoBehaviour
+{
+    public static EnvironmentControl instance;
 
-    [SerializeField]float spawnCycle = 0.08f;
+    [SerializeField] float spawnCycle = 0.08f;
     float spawnTimer = 0.0f;
     float lightsSpawnCycle = 0.8f;
     float lightsSpawnTimer = 0;
@@ -20,17 +22,23 @@ public class EnvironmentControl : MonoBehaviour {
     public Transform buildingsLeft; // Nati
     public Transform buildingsRight; // Nati
     public Transform rightSideWalk;
-    public float buildingOffsetX = 10;
+    public float buildingOffsetX = 10; // NATI
     [Header("Street Light")]
     public GameObject streetLight;
-    public Transform streetLightsLeft;
-    public Transform streetLightsRight;
-    public float streetLightOffsetX = 5;
+    public Transform streetLightsLeft; // NATI
+    public Transform streetLightsRight;// NATI
+    public float streetLightOffsetX = 5; // NATI
 
+    private void Awake()
+    {
+        instance = this;
+    }
+    /*
     private void Start()
     {
         SetAncorPositions(SpawnScript.instance.allLanes[0].position.x, SpawnScript.instance.allLanes[SpawnScript.instance.allLanes.Count - 1].position.x);
     }
+    */
     void Update()
     {
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
@@ -51,9 +59,10 @@ public class EnvironmentControl : MonoBehaviour {
                 spawnTimer = 0;
                 */
 
-                if (Manager.Instance.score < 300) // Suburb
+                if (LevelProgress.Instance.LevelNumber <= 3) // Suburb
                 {
                     spawnCycle = 0.17f;
+                    SpawnScript.instance.numberOfLanes = 2;
 
                     int randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
                     GameObject building = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsLeft.position,
@@ -63,9 +72,10 @@ public class EnvironmentControl : MonoBehaviour {
                     GameObject building2 = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsRight.position,
                         buildingsRight.rotation, buildingsRight);
                 }
-                else if (Manager.Instance.score > 300 && Manager.Instance.score < 700) // City
+                else if (LevelProgress.Instance.LevelNumber <= 6) // City
                 {
                     spawnCycle = 0.15f;
+                    SpawnScript.instance.numberOfLanes = 4;
 
                     int randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
                     GameObject building = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsLeft.position,
@@ -75,9 +85,10 @@ public class EnvironmentControl : MonoBehaviour {
                     GameObject building2 = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsRight.position,
                         buildingsRight.rotation, buildingsRight);
                 }
-                else if (Manager.Instance.score > 700 && Manager.Instance.score < 1000) // Desert
+                else if (LevelProgress.Instance.LevelNumber <= 9) // Desert
                 {
                     spawnCycle = 0.19f;
+                    SpawnScript.instance.numberOfLanes = 3;
 
                     int randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
                     GameObject building = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsLeft.position,
@@ -87,9 +98,10 @@ public class EnvironmentControl : MonoBehaviour {
                     GameObject building2 = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsRight.position,
                         desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsRight);
                 }
-                else if (Manager.Instance.score > 1000) // Beach
+                else if (LevelProgress.Instance.LevelNumber > 12) // Beach
                 {
                     spawnCycle = 1f;
+                    SpawnScript.instance.numberOfLanes = 3;
 
                     int randomBuilding = Random.Range(0, beachPrefabs.Length);
                     GameObject building = Instantiate(beachPrefabs[randomBuilding], buildingsLeft.position,
@@ -98,7 +110,7 @@ public class EnvironmentControl : MonoBehaviour {
 
                     randomBuilding = Random.Range(0, beachPrefabs.Length);
                     GameObject building2 = Instantiate(beachPrefabs[randomBuilding], buildingsRight.position,
-                       Quaternion.Euler(0,120,0), buildingsRight);
+                       Quaternion.Euler(0, 120, 0), buildingsRight);
                 }
                 ////else
                 ////{
@@ -108,7 +120,7 @@ public class EnvironmentControl : MonoBehaviour {
             }
 
             lightsSpawnTimer += Time.deltaTime;
-            if (lightsSpawnTimer > lightsSpawnCycle)
+            if (lightsSpawnTimer > lightsSpawnCycle) // Spawns Street Lights
             {
                 lightsSpawnTimer = 0;
                 /*
@@ -124,19 +136,19 @@ public class EnvironmentControl : MonoBehaviour {
                 stLight2.transform.position = new Vector3(stLight2.transform.position.x * -1, stLight2.transform.position.y, 180);
                 */
 
-                GameObject stLight1 = Instantiate(streetLight,streetLightsLeft.position,
-                    streetLightsLeft.rotation,streetLightsLeft);
+                GameObject stLight1 = Instantiate(streetLight, streetLightsLeft.position,
+                    streetLightsLeft.rotation, streetLightsLeft);
                 stLight1.transform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-                GameObject stLight2 = Instantiate(streetLight,streetLightsRight.position,
-                    streetLightsRight.rotation,streetLightsRight);
-                
+                GameObject stLight2 = Instantiate(streetLight, streetLightsRight.position,
+                    streetLightsRight.rotation, streetLightsRight);
+
             }
         }
-        
+
     }
 
-    void SetAncorPositions(float leftLaneX,float rightLaneX)
+    public void SetAncorPositions(float leftLaneX, float rightLaneX) // NATI - sets the position for the Empty GameObjects that hold buildings and street lights
     {
         buildingsLeft.position = new Vector3(leftLaneX - buildingOffsetX, buildingsLeft.position.y, buildingsLeft.position.z);
         streetLightsLeft.position = new Vector3(leftLaneX - streetLightOffsetX, streetLightsLeft.position.y, streetLightsLeft.position.z);

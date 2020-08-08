@@ -6,12 +6,15 @@ using UnityEngine.UI;
 public class LevelProgress : MonoBehaviour
 {
     public static LevelProgress Instance;
+
     public Slider LevelProgressSlider;
+    public GameObject gameOverCanvas; // NATI - added this to be turned off after game reset
     public Image FadeImage;
 
     public float Timeforlevel;
     public float LevelBarMultiplier = 1f;
-
+    [Space (5)]
+    [Header("Level Transmition Animation")]
     public float TimeStartFadeout;
     public float TimeStartFadein;
     public float TimeCallStartLevel;
@@ -29,7 +32,7 @@ public class LevelProgress : MonoBehaviour
     private float FadeJumpIntervals = 0.01f;
 
 
-    public GameObject MainMenuCanvas;
+    public GameObject MainMenuCanvas; // NATI - Where do you use this?
 
     private void Awake()
     {
@@ -43,9 +46,33 @@ public class LevelProgress : MonoBehaviour
         StartNextLevel();
     }
 
+   
+    void Update()
+    {
+        if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
+        {
+            LevelProgressSlider.value += (Time.deltaTime * LevelBarMultiplier) / Timeforlevel;
+
+
+            if(LevelProgressSlider.value >= 1)
+            {
+                FinishLevel();
+            }
+        }
+    }
+
     public void StartNextLevel() ////// CHANGE ALL LEVEL VALUES HERE SUCH AS DIFFICULTY.
     {
         LevelNumber++;
+        SpawnScript.instance.SpawnLanes(); 
+
+        if (LevelNumber % 3 == 0) // NATI - change difficulty every 3rd level
+            SpawnScript.instance.UpdateWaitTime();
+
+
+        // Instantiate(Manager.Instance.allCarPrefabs[Manager.Instance.currentCar]);
+        //  Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
+        StartCoroutine(SpawnPlayer());
 
         if (LevelNumber != 1)
         {
@@ -73,19 +100,6 @@ public class LevelProgress : MonoBehaviour
         StartCoroutine(FadeNextLevel());
     }
 
-    void Update()
-    {
-        if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
-        {
-            LevelProgressSlider.value += (Time.deltaTime * LevelBarMultiplier) / Timeforlevel;
-
-
-            if(LevelProgressSlider.value >= 1)
-            {
-                FinishLevel();
-            }
-        }
-    }
 
     public IEnumerator FadeNextLevel()
     {
@@ -105,6 +119,7 @@ public class LevelProgress : MonoBehaviour
 
 
         StartNextLevel();
+        gameOverCanvas.SetActive(false);
     }
 
     public IEnumerator FadeIn()
@@ -158,10 +173,16 @@ public class LevelProgress : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         Manager.Instance.RestartGame();
-        Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
+       // Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
         SoundManager.Instance.StartMusic();
         //Manager.Instance.currentGameState = Manager.GameStates.InGame;
     }
 
+   public IEnumerator SpawnPlayer() // NATI - added this to control player spawn here
+    {
+        Instantiate(Manager.Instance.allCarPrefabs[Manager.Instance.currentCar]);
+        yield return new WaitForEndOfFrame();
+        Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
 
+    }
 }

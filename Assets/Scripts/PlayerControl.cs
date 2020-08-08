@@ -382,6 +382,11 @@ public class PlayerControl : MonoBehaviour {
         if(Manager.Instance.currentGameState == Manager.GameStates.GameOver)
         {
             transform.Translate(new Vector3(0, 0, 1.5f), Space.World);
+            BoxCollider[] colliders = GetComponentsInChildren<BoxCollider>();
+            foreach(BoxCollider box in colliders)
+            {
+                box.enabled = false;
+            }
         }
     }
 }

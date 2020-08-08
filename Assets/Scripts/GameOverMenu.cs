@@ -31,12 +31,15 @@ public class GameOverMenu : MonoBehaviour {
     IEnumerator RestartAfterFrame()
     {
         yield return new WaitForEndOfFrame();
-
+        /*
         Manager.Instance.RestartGame();
         Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
         SoundManager.Instance.StartMusic();
-        //Manager.Instance.currentGameState = Manager.GameStates.InGame;
+        Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
         this.transform.gameObject.SetActive(false);
+        */
+        StartCoroutine(LevelProgress.Instance.FadeNextLevel());
+       
     }
 
     public void LeaderboardPressed()

@@ -49,21 +49,6 @@ public class SpawnScript : MonoBehaviour
 
         canSpawn = true;
 
-        for(int i = 0;i < numberOfLanes; i++)
-        {
-            if (i > 0)
-            {
-                GameObject lane = Instantiate(middleLane, allLanesTransform.position, allLanesTransform.rotation, allLanesTransform);
-                lane.transform.position = new Vector3((allLanes[i - 1].position.x + 4), lane.transform.position.y, lane.transform.position.z);
-                
-                allLanes.Add(lane.transform);
-            }
-            else
-            {
-                GameObject lane = Instantiate(middleLane, allLanesTransform.position, allLanesTransform.rotation, allLanesTransform);
-                allLanes.Add(lane.transform);
-            }
-        }
     }
 
     private void Start()
@@ -113,11 +98,12 @@ public class SpawnScript : MonoBehaviour
                 canSpawn = false;
                 StartCoroutine(SpawnObstacles(waitForSpawn));
             }
-
+            /*
             if (Manager.Instance.score % 300 == 0) //&& Manager.Instance.score != 0 && DoOnce) // NATI: Updates bool addDifficulty
             {
                 UpdateWaitTime();
             }
+            */
 
             //spawnTimer = 0;
             //}
@@ -141,7 +127,7 @@ public class SpawnScript : MonoBehaviour
     public void UpdateWaitTime()
     {
         if(waitForSpawn > 0.2f)
-        waitForSpawn -= 0.1f;
+        waitForSpawn -= 0.2f;
 
         Debug.Log("Add defficulty");
 
@@ -172,5 +158,26 @@ public class SpawnScript : MonoBehaviour
 
         canSpawn = true;
         yield return null;
+    }
+
+    public void SpawnLanes() // NATI - use this to spawn lanes by given number
+    {
+        for (int i = 0; i < numberOfLanes; i++)
+        {
+            if (i > 0)
+            {
+                GameObject lane = Instantiate(middleLane, allLanesTransform.position, allLanesTransform.rotation, allLanesTransform);
+                lane.transform.position = new Vector3((allLanes[i - 1].position.x + 4), lane.transform.position.y, lane.transform.position.z);
+
+                allLanes.Add(lane.transform);
+            }
+            else
+            {
+                GameObject lane = Instantiate(middleLane, allLanesTransform.position, allLanesTransform.rotation, allLanesTransform);
+                allLanes.Add(lane.transform);
+            }
+        }
+        EnvironmentControl.instance.SetAncorPositions(allLanes[0].position.x, allLanes[SpawnScript.instance.allLanes.Count - 1].position.x);
+
     }
 }

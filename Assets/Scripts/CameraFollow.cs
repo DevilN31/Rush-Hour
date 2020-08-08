@@ -79,7 +79,7 @@ public class CameraFollow : MonoBehaviour {
                 transform.position = Vector3.Lerp(transform.position, new Vector3(target.position.x, destination.y, transform.position.z), Time.deltaTime * 5);
             }
         }
-        else if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu)
+        else if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu && target != null)
         {
             if (transform.position.x != target.position.x)
             {
