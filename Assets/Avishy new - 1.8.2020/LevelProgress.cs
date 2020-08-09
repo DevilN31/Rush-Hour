@@ -33,6 +33,7 @@ public class LevelProgress : MonoBehaviour
 
 
     public GameObject MainMenuCanvas; // NATI - Where do you use this?
+    bool multiplyBarMultiplier; // NATI
 
     private void Awake()
     {
@@ -59,6 +60,18 @@ public class LevelProgress : MonoBehaviour
                 FinishLevel();
             }
         }
+
+        if (Manager.Instance.obstacleSpeed == Manager.Instance.fastSpeed && !multiplyBarMultiplier) // NATI - change when player speeds up
+        {
+            multiplyBarMultiplier = true;
+            LevelBarMultiplier *= 2; 
+        }
+        
+        else if (Manager.Instance.obstacleSpeed == Manager.Instance.defaultSpeed && multiplyBarMultiplier) // NATI - goes back to normal
+        {
+            LevelBarMultiplier /= 2;
+            multiplyBarMultiplier = false;
+        }
     }
 
     public void StartNextLevel() ////// CHANGE ALL LEVEL VALUES HERE SUCH AS DIFFICULTY.
@@ -83,7 +96,7 @@ public class LevelProgress : MonoBehaviour
             Manager.FirstGame = true;
         }
 
-        Manager.Instance.scoreText.gameObject.SetActive(true);
+        //Manager.Instance.scoreText.gameObject.SetActive(true);
 
         EndLevelCamAnim.Play("Base Layer.StartLevelAnim", 0);
 

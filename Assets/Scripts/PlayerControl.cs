@@ -61,6 +61,7 @@ public class PlayerControl : MonoBehaviour {
         em = windParticleSystem.emission;
         em.enabled = false;
         healthCanvas = GameObject.Find("HealthCanvas");
+        ResetHealthCanvas(); // NATI
 
         if (Manager.FirstGame)
         {
@@ -386,6 +387,17 @@ public class PlayerControl : MonoBehaviour {
             foreach(BoxCollider box in colliders)
             {
                 box.enabled = false;
+            }
+        }
+    }
+
+    void ResetHealthCanvas() // NATI
+    {
+        for(int i=0; i < healthCanvas.transform.childCount; i++)
+        {
+            if (healthCanvas.transform.GetChild(i).gameObject.activeSelf)
+            {
+                healthCanvas.transform.GetChild(i).gameObject.SetActive(false);
             }
         }
     }

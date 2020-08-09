@@ -41,7 +41,7 @@ public class EnvironmentControl : MonoBehaviour
     */
     void Update()
     {
-        if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
+        if (Manager.Instance.currentGameState == Manager.GameStates.InGame || Manager.Instance.currentGameState == Manager.GameStates.MainMenu)
         {
             spawnTimer += Time.deltaTime;
             if (spawnTimer > spawnCycle)
@@ -98,19 +98,17 @@ public class EnvironmentControl : MonoBehaviour
                     GameObject building2 = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsRight.position,
                         desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsRight);
                 }
-                else if (LevelProgress.Instance.LevelNumber > 12) // Beach
+                else if (LevelProgress.Instance.LevelNumber > 9) // Beach
                 {
                     spawnCycle = 1f;
                     SpawnScript.instance.numberOfLanes = 3;
 
-                    int randomBuilding = Random.Range(0, beachPrefabs.Length);
-                    GameObject building = Instantiate(beachPrefabs[randomBuilding], buildingsLeft.position,
+                    GameObject building = Instantiate(beachPrefabs[0], buildingsLeft.position,
                         buildingsLeft.rotation, buildingsLeft);
-                    building.transform.localRotation = Quaternion.Euler(0, 205, 0);
+                    building.transform.localRotation = Quaternion.Euler(0, -90, 0);
 
-                    randomBuilding = Random.Range(0, beachPrefabs.Length);
-                    GameObject building2 = Instantiate(beachPrefabs[randomBuilding], buildingsRight.position,
-                       Quaternion.Euler(0, 120, 0), buildingsRight);
+                    GameObject building2 = Instantiate(beachPrefabs[1], buildingsRight.position - new Vector3(7,0,0),
+                       Quaternion.Euler(0, 0, 0), buildingsRight);
                 }
                 ////else
                 ////{

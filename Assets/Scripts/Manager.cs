@@ -105,6 +105,7 @@ public class Manager : Singleton<Manager>
         currentCar = PlayerPrefs.GetInt("currentCar", 0);
         highScore = PlayerPrefs.GetInt("highScore", 0);
 
+        scoreText.gameObject.SetActive(false); // NATI
        // Instantiate(allCarPrefabs[currentCar]);
 
         gameOverCanvas.gameObject.SetActive(false);
@@ -185,7 +186,7 @@ public class Manager : Singleton<Manager>
             //frameCount++;
 
             //totalTimeElapsed += Time.deltaTime;
-            scoreText.text = score.ToString();
+           // scoreText.text = score.ToString(); // NATI
 
             if (score % fogChangeScore == 0 && score != 0 && !changeFogColor)
             {
@@ -225,7 +226,7 @@ public class Manager : Singleton<Manager>
     public void RestartGame()
     {
         score = 0;
-        scoreText.text = "0";
+       // scoreText.text = "0"; // NATI
 
         //totalTimeElapsed = 0;
 
