@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,7 +10,6 @@ public class GameOverMenu : MonoBehaviour {
     [Header("Score labels")]
     public Text scoreText;
     public Text highScoreText;
-
     public void UpdateScore()
     {
         //scoreText.text = Manager.Instance.score.ToString(); // NATI
@@ -41,12 +41,12 @@ public class GameOverMenu : MonoBehaviour {
         Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
         this.transform.gameObject.SetActive(false);
         */
-        LevelProgress.Instance.LevelNumber = 0;
-        SpawnScript.instance.waitForSpawn = 1.5f;
-        StartCoroutine(ClearBuildings());
+        //LevelProgress.Instance.LevelNumber = 0;
+        //SpawnScript.instance.waitForSpawn = 1.5f;
+        LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(false);
+        LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
 
-        StartCoroutine(LevelProgress.Instance.FadeNextLevel());
-       
+        StartCoroutine(LevelProgress.Instance.FadeNextLevel(true));
     }
 
     public void LeaderboardPressed()
@@ -54,18 +54,4 @@ public class GameOverMenu : MonoBehaviour {
         //Manager.Instance.ShowLeaderboard();
     }
 
-    IEnumerator ClearBuildings()
-    {
-        yield return null;
-
-        for(int i = 0; i < EnvironmentControl.instance.buildingsLeft.childCount; i++)
-        {
-            Destroy(EnvironmentControl.instance.buildingsLeft.GetChild(i).gameObject);
-        }
-
-        for (int i = 0; i < EnvironmentControl.instance.buildingsRight.childCount; i++)
-        {
-            Destroy(EnvironmentControl.instance.buildingsRight.GetChild(i).gameObject);
-        }
-    }
 }

@@ -45,20 +45,18 @@ public class SpawnScript : MonoBehaviour
         if (instance != null)
             Destroy(this);
 
+        if (PlayerPrefs.HasKey("Wait For Spawn"))
+        {
+            waitForSpawn = PlayerPrefs.GetFloat("Wait For Spawn");
+        }
+        
         instance = this;
 
         canSpawn = true;
-
-    }
-
-    private void Start()
-    {
-        
     }
 
     void Update()
-    {
-        
+    {       
         //if(addDifficulty) // NATI: Adds Difficulty
         //{
             //if(defaultSpawnTime > 0.4) /// Limit
@@ -127,8 +125,13 @@ public class SpawnScript : MonoBehaviour
     public void UpdateWaitTime()
     {
         if(waitForSpawn > 0.2f)
-        waitForSpawn -= 0.2f;
+        waitForSpawn -= 0.3f;
 
+        if (waitForSpawn < 0.3f)
+        {
+            waitForSpawn = 0.3f;
+        }
+            PlayerPrefs.SetFloat("Wait For Spawn", waitForSpawn);
         Debug.Log("Add defficulty");
 
        // DoOnce = false;

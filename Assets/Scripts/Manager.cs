@@ -270,6 +270,9 @@ public class Manager : Singleton<Manager>
         gameOverCanvas.GetComponent<GameOverMenu>().UpdateScore();
         //currentGameState = GameStates.GameOver;
 
+        LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(false);
+        LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
+
         gameOverCanvas.gameObject.SetActive(true);
     }
 

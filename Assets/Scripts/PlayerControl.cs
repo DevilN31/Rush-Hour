@@ -31,7 +31,7 @@ public class PlayerControl : MonoBehaviour {
     GameObject healthCanvas;
 
     private bool isGameOver = false;
-
+    public static bool CanBeHit;
     //public GameObject redFlash;
     //GameObject spawnedRedFlash;
 
@@ -49,6 +49,7 @@ public class PlayerControl : MonoBehaviour {
 
     void Start()
     {
+        CanBeHit = true;
         RB = GetComponent<Rigidbody>();
         RB.constraints = RigidbodyConstraints.FreezeAll;
 
@@ -85,7 +86,9 @@ public class PlayerControl : MonoBehaviour {
         cameraFollow.ResetCamera();
         
         allLanes = SpawnScript.instance.allLanes;
+
         currentLane = allLanes.Count / 2;
+
         transform.position = new Vector3(allLanes[currentLane].position.x,transform.position.y,transform.position.z);
 
     }
@@ -155,6 +158,7 @@ public class PlayerControl : MonoBehaviour {
         yield return new WaitForSeconds(2.0f);
         
         ShowGameOver();
+
         yield return new WaitForSeconds(0.5f);
 
         Destroy(gameObject);
@@ -165,7 +169,10 @@ public class PlayerControl : MonoBehaviour {
     {
         if (other.gameObject.tag == "Obstacle" && !other.gameObject.transform.GetComponent<ObstacleScript>().hasCollided == true)
         {
-            TakeHit();
+            if (CanBeHit)
+            {
+                TakeHit();
+            }
             other.gameObject.transform.GetComponent<ObstacleScript>().hasCollided = true;
             other.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
         }
@@ -276,6 +283,15 @@ public class PlayerControl : MonoBehaviour {
 
             LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(true); //// ADDED BY AVISHY - 1.8.2020
 
+            if (EnvironmentControl.instance.GameFinished)
+            {
+                LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
+            }
+            else
+            {
+                LevelProgress.Instance.LevelNum.gameObject.SetActive(true);
+            }
+
             LevelProgress.Instance.LevelProgressSlider.value = 0; //// ADDED BY AVISHY - 1.8.2020
 
             SoundManager.Instance.PlaySwipeUpDown();
@@ -307,6 +323,7 @@ public class PlayerControl : MonoBehaviour {
 
             if (Input.GetKeyDown(KeyCode.S) || Manager.Instance.moveDir == Manager.SwipeStates.Down)
             {
+                StartCoroutine(carBehind.Delay());
                 if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
                 {
                     StartCoroutine(carBehind.Delay());
@@ -383,11 +400,13 @@ public class PlayerControl : MonoBehaviour {
         if(Manager.Instance.currentGameState == Manager.GameStates.GameOver)
         {
             transform.Translate(new Vector3(0, 0, 1.5f), Space.World);
-            BoxCollider[] colliders = GetComponentsInChildren<BoxCollider>();
-            foreach(BoxCollider box in colliders)
-            {
-                box.enabled = false;
-            }
+            CanBeHit = false;
+            //BoxCollider[] colliders = GetComponentsInChildren<BoxCollider>();
+            //foreach(BoxCollider box in colliders)
+            //{
+            //    box.enabled = false;
+            //}
+
         }
     }
 

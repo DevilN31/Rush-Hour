@@ -6,7 +6,9 @@ public class Buildings : MonoBehaviour {
 
     Rigidbody rb;
     Vector3 buildingSpeed;
-	// Use this for initialization
+    // Use this for initialization
+
+    public int DistanceToDestroy;
 	void Start ()
     {
         buildingSpeed = Manager.Instance.buildingDefaultSpeed;
@@ -25,7 +27,7 @@ public class Buildings : MonoBehaviour {
 
             transform.Translate(new Vector3(0, 0, buildingSpeed.z), Space.World);
 
-            if (transform.position.z < -40)
+            if (transform.position.z < DistanceToDestroy)
             {
                 Destroy(transform.gameObject);
             }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class CarBehind : MonoBehaviour {
 
     bool bringNear = false;
-    GameObject Car;
+    public GameObject Car;
 
     private void Start()
     {
@@ -13,8 +13,9 @@ public class CarBehind : MonoBehaviour {
     }
     public void Reset()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, -26.0f);
+        transform.position = new Vector3(transform.position.x, transform.position.y, -35.0f);
         bringNear = false;
+        Car = GameObject.FindGameObjectWithTag("Player");
     }
     public IEnumerator Delay()
     {
@@ -35,7 +36,7 @@ public class CarBehind : MonoBehaviour {
             }
             else
             {
-                transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, -26.0f), Time.deltaTime * 5);
+                transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, -35.0f), Time.deltaTime * 5);
             }
         }
         

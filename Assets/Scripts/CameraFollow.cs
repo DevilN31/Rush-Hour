@@ -75,7 +75,7 @@ public class CameraFollow : MonoBehaviour {
             }
             else if (currentState == CameraStates.sendFar)
             {
-                Vector3 destination = new Vector3(0, 4.74f, 0.0f);
+                Vector3 destination = new Vector3(0, 9f, 0.0f);
                 transform.position = Vector3.Lerp(transform.position, new Vector3(target.position.x, destination.y, transform.position.z), Time.deltaTime * 5);
             }
         }
