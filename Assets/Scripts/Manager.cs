@@ -105,8 +105,8 @@ public class Manager : Singleton<Manager>
         currentCar = PlayerPrefs.GetInt("currentCar", 0);
         highScore = PlayerPrefs.GetInt("highScore", 0);
 
-        Instantiate(allCarPrefabs[currentCar]);// WTF IS THIS?!?!?!?
-        //go.name = "Car";// Let's change "WTF IS THIS" to "Car"
+        scoreText.gameObject.SetActive(false); // NATI
+       // Instantiate(allCarPrefabs[currentCar]);
 
         gameOverCanvas.gameObject.SetActive(false);
         currentGameState = GameStates.MainMenu;
@@ -186,7 +186,7 @@ public class Manager : Singleton<Manager>
             //frameCount++;
 
             //totalTimeElapsed += Time.deltaTime;
-            scoreText.text = score.ToString();
+           // scoreText.text = score.ToString(); // NATI
 
             if (score % fogChangeScore == 0 && score != 0 && !changeFogColor)
             {
@@ -226,31 +226,33 @@ public class Manager : Singleton<Manager>
     public void RestartGame()
     {
         score = 0;
-        scoreText.text = "0";
+       // scoreText.text = "0"; // NATI
 
         //totalTimeElapsed = 0;
 
         //SpawnScript.instance.defaultSpawnTime = 0.75f;
-        SpawnScript.instance.waitForSpawn = 1.5f;
+       // SpawnScript.instance.waitForSpawn = 1.5f; /// NATI - now controlled by LevelProgress
 
-        for (int i = 0; i < SpawnScript.instance.allLanes.Count; i++) 
+        for (int i = 0; i < SpawnScript.instance.allLanes.Count; i++)
         {
+            Destroy(SpawnScript.instance.allLanes[i].gameObject);
             /*
-            foreach (Transform child in SpawnScript.instance.allLanes[i])
-                Destroy(child.gameObject); 
-            */
-            Debug.Log($"{SpawnScript.instance.allLanes[i].name} children count: {SpawnScript.instance.allLanes[i].childCount}");
             if (SpawnScript.instance.allLanes[i].childCount > 1)
             {
-                for (int j = 1; j < SpawnScript.instance.allLanes[i].childCount; j++)
+          
+                for (int j = 0; j < SpawnScript.instance.allLanes[i].childCount; j++)
                 {
                     Destroy(SpawnScript.instance.allLanes[i].GetChild(j).gameObject);
                 }
+               
             }
+            */
         }
 
+        SpawnScript.instance.allLanes.Clear();
+
         //instantiate car
-        GameObject go = Instantiate(allCarPrefabs[currentCar]);
+       // GameObject go = Instantiate(allCarPrefabs[currentCar]);
         //go.name = "Car";
     }
 

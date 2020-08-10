@@ -29,7 +29,6 @@ public class PlayerControl : MonoBehaviour {
     ParticleSystem.EmissionModule em;
 
     GameObject healthCanvas;
-    GameObject MainMenuCanvas;
 
     private bool isGameOver = false;
 
@@ -62,7 +61,7 @@ public class PlayerControl : MonoBehaviour {
         em = windParticleSystem.emission;
         em.enabled = false;
         healthCanvas = GameObject.Find("HealthCanvas");
-        MainMenuCanvas = GameObject.Find("MainMenuCanvas");
+        ResetHealthCanvas(); // NATI
 
         if (Manager.FirstGame)
         {
@@ -267,13 +266,26 @@ public class PlayerControl : MonoBehaviour {
         }
     }
 
-    void StartGame()
+    void StartGame() ///// Changed by avishy - moved to levelProgress script
     {
-        Manager.FirstGame = false;
-        MainMenuCanvas.SetActive(false);
-        Manager.Instance.scoreText.gameObject.SetActive(true);
-        SoundManager.Instance.PlaySwipeUpDown();
-        Manager.Instance.currentGameState = Manager.GameStates.InGame;
+        Manager.Instance.currentGameState = Manager.GameStates.InGame; //// ADDED BY AVISHY - 1.8.2020
+
+        if (LevelProgress.Instance.MainMenuCanvas.activeInHierarchy) //// ADDED BY AVISHY - 1.8.2020
+        {
+            LevelProgress.Instance.MainMenuCanvas.SetActive(false); //// ADDED BY AVISHY - 1.8.2020
+
+            LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(true); //// ADDED BY AVISHY - 1.8.2020
+
+            LevelProgress.Instance.LevelProgressSlider.value = 0; //// ADDED BY AVISHY - 1.8.2020
+
+            SoundManager.Instance.PlaySwipeUpDown();
+        }
+
+        //Manager.FirstGame = false;
+        //Manager.Instance.scoreText.gameObject.SetActive(true);
+        //SoundManager.Instance.PlaySwipeUpDown();
+        //LevelProgress.Instance.StartNextLevel();
+        //Manager.Instance.currentGameState = Manager.GameStates.InGame;
     }
 
     void Update()
@@ -282,6 +294,8 @@ public class PlayerControl : MonoBehaviour {
         {
             if ((Input.GetMouseButtonUp(0) && Input.mousePosition.y > 200 && Input.mousePosition.y < Screen.height - 200 ))
             {
+                //LevelProgress.Instance.StartNextLevel(); //// ADDED BY AVISHY - 1.8.2020
+
                 StartGame();
             }
         }
@@ -323,7 +337,7 @@ public class PlayerControl : MonoBehaviour {
                 {
                     animator.SetTrigger("RotateLeft");
                 }
-                currentLane = Mathf.Clamp(currentLane, 0, 4);
+                currentLane = Mathf.Clamp(currentLane, 0, SpawnScript.instance.allLanes.Count - 1);
 
                 destination = allLanes[currentLane].position;
                 destination = new Vector3(destination.x, transform.position.y, transform.position.z);
@@ -335,14 +349,13 @@ public class PlayerControl : MonoBehaviour {
             {
                 BlinkRight();
                 //go right
-                if(currentLane < SpawnScript.instance.allLanes.Count - 1)
                 currentLane++;
 
                 if (currentLane <= SpawnScript.instance.allLanes.Count-1)
                 {
                     animator.SetTrigger("RotateRight");
                 }
-                currentLane = Mathf.Clamp(currentLane, 0, 4);
+                currentLane = Mathf.Clamp(currentLane, 0, SpawnScript.instance.allLanes.Count - 1);
 
                 destination = allLanes[currentLane].position;
                 destination = new Vector3(destination.x, transform.position.y, transform.position.z);
@@ -364,6 +377,27 @@ public class PlayerControl : MonoBehaviour {
                 {
                     StopIndicators();
                 }
+            }
+        }
+
+        if(Manager.Instance.currentGameState == Manager.GameStates.GameOver)
+        {
+            transform.Translate(new Vector3(0, 0, 1.5f), Space.World);
+            BoxCollider[] colliders = GetComponentsInChildren<BoxCollider>();
+            foreach(BoxCollider box in colliders)
+            {
+                box.enabled = false;
+            }
+        }
+    }
+
+    void ResetHealthCanvas() // NATI
+    {
+        for(int i=0; i < healthCanvas.transform.childCount; i++)
+        {
+            if (healthCanvas.transform.GetChild(i).gameObject.activeSelf)
+            {
+                healthCanvas.transform.GetChild(i).gameObject.SetActive(false);
             }
         }
     }

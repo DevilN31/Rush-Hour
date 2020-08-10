@@ -12,8 +12,11 @@ public class GameOverMenu : MonoBehaviour {
 
     public void UpdateScore()
     {
-        scoreText.text = Manager.Instance.score.ToString();
-        highScoreText.text = "Best: " + Manager.Instance.highScore.ToString();
+        //scoreText.text = Manager.Instance.score.ToString(); // NATI
+        //highScoreText.text = "Best: " + Manager.Instance.highScore.ToString(); // NATI
+
+        scoreText.gameObject.SetActive(false); // NATI
+        highScoreText.gameObject.SetActive(false); // NATI
     }
 
     public void RestartGame()
@@ -31,16 +34,38 @@ public class GameOverMenu : MonoBehaviour {
     IEnumerator RestartAfterFrame()
     {
         yield return new WaitForEndOfFrame();
-
+        /*
         Manager.Instance.RestartGame();
         Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
         SoundManager.Instance.StartMusic();
-        Manager.Instance.currentGameState = Manager.GameStates.InGame;
+        Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
         this.transform.gameObject.SetActive(false);
+        */
+        LevelProgress.Instance.LevelNumber = 0;
+        SpawnScript.instance.waitForSpawn = 1.5f;
+        StartCoroutine(ClearBuildings());
+
+        StartCoroutine(LevelProgress.Instance.FadeNextLevel());
+       
     }
 
     public void LeaderboardPressed()
     {
         //Manager.Instance.ShowLeaderboard();
+    }
+
+    IEnumerator ClearBuildings()
+    {
+        yield return null;
+
+        for(int i = 0; i < EnvironmentControl.instance.buildingsLeft.childCount; i++)
+        {
+            Destroy(EnvironmentControl.instance.buildingsLeft.GetChild(i).gameObject);
+        }
+
+        for (int i = 0; i < EnvironmentControl.instance.buildingsRight.childCount; i++)
+        {
+            Destroy(EnvironmentControl.instance.buildingsRight.GetChild(i).gameObject);
+        }
     }
 }
