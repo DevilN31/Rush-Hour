@@ -97,9 +97,6 @@ public class Manager : Singleton<Manager>
         Down
     }
 
-   
-
-
     void Awake()
     {
         currentCar = PlayerPrefs.GetInt("currentCar", 0);
@@ -202,7 +199,6 @@ public class Manager : Singleton<Manager>
 
     }
 
-
     void ChangeFog()
     {
         lerpedColor = Color.Lerp(RenderSettings.fogColor, allFogColors[fogIndex], t);
@@ -272,6 +268,9 @@ public class Manager : Singleton<Manager>
 
         LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(false);
         LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
+        LevelProgress.Instance.PauseGameButton.SetActive(false);
+        LevelProgress.Instance.RestartLevelButton.interactable = true;
+        LevelProgress.Instance.CanStartDriving = false;
 
         gameOverCanvas.gameObject.SetActive(true);
     }

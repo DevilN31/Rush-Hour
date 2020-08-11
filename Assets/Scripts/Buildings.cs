@@ -18,7 +18,7 @@ public class Buildings : MonoBehaviour {
     void Update()
     {
 
-        if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
+        if (Manager.Instance.currentGameState == Manager.GameStates.InGame && !LevelProgress.Instance.GamePaused)
         {
             if (buildingSpeed.z != Manager.Instance.buildingsSpeed.z)
             {

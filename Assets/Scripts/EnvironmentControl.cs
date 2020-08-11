@@ -32,6 +32,13 @@ public class EnvironmentControl : MonoBehaviour
     private int CheckGameFinished; // Avishy 10.8
     [HideInInspector]
     public bool GameFinished; // Avishy 10.8
+
+    int randomBuilding = 0;
+    GameObject building = null;
+    GameObject building2 = null;
+
+    public int RandomizeBuilding = 0;
+
     private void Awake()
     {
         instance = this;
@@ -80,43 +87,41 @@ public class EnvironmentControl : MonoBehaviour
 
                 if (!GameFinished)
                 {
-                    ChooseBuilding();
-                    Debug.Log("Normal");
+                    ChooseBuildingNormal();
+                    //Debug.Log("Normal");
                 }
                 else
                 {
-                    ChooseBuilding();
+                    ChooseBuildingEndGame(RandomizeBuilding);
+                    //Debug.Log("Randomizing");
                 }
                 spawnTimer = 0;
             }
 
-            if(LevelProgress.Instance.LevelNumber < 9)
+            lightsSpawnTimer += Time.deltaTime;
+            if (lightsSpawnTimer > lightsSpawnCycle) // Spawns Street Lights
             {
-                lightsSpawnTimer += Time.deltaTime;
-                if (lightsSpawnTimer > lightsSpawnCycle) // Spawns Street Lights
-                {
-                    lightsSpawnTimer = 0;
-                    /*
-                    GameObject stLight1 = Instantiate(streetLight) as GameObject;
-                    stLight1.transform.SetParent(GameObject.Find("StreetLights").transform);
-                    stLight1.transform.position = new Vector3(stLight1.transform.position.x, stLight1.transform.position.y, 180);
-                    stLight1.transform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                lightsSpawnTimer = 0;
+                /*
+                GameObject stLight1 = Instantiate(streetLight) as GameObject;
+                stLight1.transform.SetParent(GameObject.Find("StreetLights").transform);
+                stLight1.transform.position = new Vector3(stLight1.transform.position.x, stLight1.transform.position.y, 180);
+                stLight1.transform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-                    GameObject stLight2 = Instantiate(streetLight) as GameObject;
-                    stLight2.transform.SetParent(GameObject.Find("StreetLights").transform);
-                    stLight2.transform.rotation = Quaternion.Euler(new Vector3(0, -90, 0));
-                    stLight2.transform.GetChild(0).transform.localRotation = Quaternion.Euler(new Vector3(90, -90, 0));
-                    stLight2.transform.position = new Vector3(stLight2.transform.position.x * -1, stLight2.transform.position.y, 180);
-                    */
+                GameObject stLight2 = Instantiate(streetLight) as GameObject;
+                stLight2.transform.SetParent(GameObject.Find("StreetLights").transform);
+                stLight2.transform.rotation = Quaternion.Euler(new Vector3(0, -90, 0));
+                stLight2.transform.GetChild(0).transform.localRotation = Quaternion.Euler(new Vector3(90, -90, 0));
+                stLight2.transform.position = new Vector3(stLight2.transform.position.x * -1, stLight2.transform.position.y, 180);
+                */
 
-                    GameObject stLight1 = Instantiate(streetLight, streetLightsLeft.position,
-                        streetLightsLeft.rotation, streetLightsLeft);
-                    stLight1.transform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                GameObject stLight1 = Instantiate(streetLight, streetLightsLeft.position,
+                    streetLightsLeft.rotation, streetLightsLeft);
+                stLight1.transform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-                    GameObject stLight2 = Instantiate(streetLight, streetLightsRight.position,
-                        streetLightsRight.rotation, streetLightsRight);
+                GameObject stLight2 = Instantiate(streetLight, streetLightsRight.position,
+                    streetLightsRight.rotation, streetLightsRight);
 
-                }
             }
         }
     }
@@ -132,7 +137,7 @@ public class EnvironmentControl : MonoBehaviour
     }
 
 
-    public void ChooseBuilding()
+    public void ChooseBuildingNormal()
     {
         if (LevelProgress.Instance.LevelNumber <= 3) // Suburb
         {
@@ -140,12 +145,12 @@ public class EnvironmentControl : MonoBehaviour
             SpawnScript.instance.numberOfLanes = 2;
             PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
 
-            int randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
-            GameObject building = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+            randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
+            building = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsLeft.position,
                 buildingsLeft.rotation, buildingsLeft);
 
             randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
-            GameObject building2 = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsRight.position,
+            building2 = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsRight.position,
                 buildingsRight.rotation, buildingsRight);
         }
         else if (LevelProgress.Instance.LevelNumber <= 6) // City
@@ -154,12 +159,12 @@ public class EnvironmentControl : MonoBehaviour
             SpawnScript.instance.numberOfLanes = 4;
 
             PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
-            int randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
-            GameObject building = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+            randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
+            building = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsLeft.position,
                 buildingsLeft.rotation, buildingsLeft);
 
             randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
-            GameObject building2 = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsRight.position,
+            building2 = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsRight.position,
                 buildingsRight.rotation, buildingsRight);
         }
         else if (LevelProgress.Instance.LevelNumber <= 9) // Desert
@@ -168,12 +173,12 @@ public class EnvironmentControl : MonoBehaviour
             SpawnScript.instance.numberOfLanes = 3;
             PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
 
-            int randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
-            GameObject building = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+            randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
+            building = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsLeft.position,
                 desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsLeft);
 
             randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
-            GameObject building2 = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsRight.position,
+            building2 = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsRight.position,
                 desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsRight);
         }
         else if (LevelProgress.Instance.LevelNumber <= 12) // Beach
@@ -182,12 +187,64 @@ public class EnvironmentControl : MonoBehaviour
             SpawnScript.instance.numberOfLanes = 3;
             PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
 
-            GameObject building = Instantiate(beachPrefabs[0], buildingsLeft.position,
+            building = Instantiate(beachPrefabs[0], buildingsLeft.position,
                 buildingsLeft.rotation, buildingsLeft);
             building.transform.localRotation = Quaternion.Euler(0, -90, 0);
 
-            GameObject building2 = Instantiate(beachPrefabs[1], buildingsRight.position - new Vector3(7, 0, 0),
+            building2 = Instantiate(beachPrefabs[1], buildingsRight.position - new Vector3(7, 0, 0),
                Quaternion.Euler(0, 0, 0), buildingsRight);
+        }
+    }
+
+    public void ChooseBuildingEndGame(int Randomize)
+    {
+        switch (Randomize)
+        {
+            case 1:
+                spawnCycle = 0.25f;
+                randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
+                building = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+                    buildingsLeft.rotation, buildingsLeft);
+
+                randomBuilding = Random.Range(0, suburbBuildingsPrefabs.Length);
+                building2 = Instantiate(suburbBuildingsPrefabs[randomBuilding], buildingsRight.position,
+                    buildingsRight.rotation, buildingsRight);
+                break;
+
+            case 2:
+                spawnCycle = 0.15f;
+                randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
+                building = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+                    buildingsLeft.rotation, buildingsLeft);
+
+                randomBuilding = Random.Range(0, cityBuildingsPrefabs.Length);
+                building2 = Instantiate(cityBuildingsPrefabs[randomBuilding], buildingsRight.position,
+                    buildingsRight.rotation, buildingsRight);
+                break;
+
+            case 3:
+                spawnCycle = 0.19f;
+                randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
+                building = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsLeft.position,
+                    desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsLeft);
+
+                randomBuilding = Random.Range(0, desertBuildingsPrefabs.Length);
+                building2 = Instantiate(desertBuildingsPrefabs[randomBuilding], buildingsRight.position,
+                    desertBuildingsPrefabs[randomBuilding].transform.rotation, buildingsRight);
+                break;
+
+            case 4:
+                spawnCycle = 1f;
+                building = Instantiate(beachPrefabs[0], buildingsLeft.position,
+                    buildingsLeft.rotation, buildingsLeft);
+                building.transform.localRotation = Quaternion.Euler(0, -90, 0);
+
+                building2 = Instantiate(beachPrefabs[1], buildingsRight.position - new Vector3(7, 0, 0),
+                   Quaternion.Euler(0, 0, 0), buildingsRight);
+                break;
+
+            default:
+                break;
         }
     }
 }

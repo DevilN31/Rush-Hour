@@ -21,6 +21,8 @@ public class GameOverMenu : MonoBehaviour {
 
     public void RestartGame()
     {
+        LevelProgress.Instance.RestartLevelButton.interactable = false;
+
         if (GameObject.FindGameObjectWithTag("Player"))
         {
             Destroy(GameObject.FindGameObjectWithTag("Player").gameObject);
@@ -45,6 +47,7 @@ public class GameOverMenu : MonoBehaviour {
         //SpawnScript.instance.waitForSpawn = 1.5f;
         LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(false);
         LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
+        LevelProgress.Instance.PauseGameButton.gameObject.SetActive(false);
 
         StartCoroutine(LevelProgress.Instance.FadeNextLevel(true));
     }

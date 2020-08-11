@@ -37,6 +37,9 @@ public class PlayerControl : MonoBehaviour {
 
     bool isShaking = false;
 
+    public static bool ShowBoosstMessage = true;
+    public static bool ShowBrakeMessage = true;
+
     CarBehind carBehind;
     ParticleSystem accidentSmoke;
     ParticleSystem.EmissionModule accEm;
@@ -282,15 +285,8 @@ public class PlayerControl : MonoBehaviour {
             LevelProgress.Instance.MainMenuCanvas.SetActive(false); //// ADDED BY AVISHY - 1.8.2020
 
             LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(true); //// ADDED BY AVISHY - 1.8.2020
-
-            if (EnvironmentControl.instance.GameFinished)
-            {
-                LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
-            }
-            else
-            {
-                LevelProgress.Instance.LevelNum.gameObject.SetActive(true);
-            }
+            LevelProgress.Instance.LevelNum.gameObject.SetActive(true);
+            LevelProgress.Instance.PauseGameButton.SetActive(true);
 
             LevelProgress.Instance.LevelProgressSlider.value = 0; //// ADDED BY AVISHY - 1.8.2020
 
@@ -306,12 +302,12 @@ public class PlayerControl : MonoBehaviour {
 
     void Update()
     {
-        if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu && !Manager.Instance.inShop)
+        if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu && !Manager.Instance.inShop && LevelProgress.Instance.CanStartDriving)
         {
             if ((Input.GetMouseButtonUp(0) && Input.mousePosition.y > 200 && Input.mousePosition.y < Screen.height - 200 ))
             {
                 //LevelProgress.Instance.StartNextLevel(); //// ADDED BY AVISHY - 1.8.2020
-
+                LevelProgress.Instance.SwipeToStart.gameObject.SetActive(false);
                 StartGame();
             }
         }
@@ -323,6 +319,7 @@ public class PlayerControl : MonoBehaviour {
 
             if (Input.GetKeyDown(KeyCode.S) || Manager.Instance.moveDir == Manager.SwipeStates.Down)
             {
+                ShowBrakeMessage = false;
                 StartCoroutine(carBehind.Delay());
                 if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
                 {
@@ -338,6 +335,7 @@ public class PlayerControl : MonoBehaviour {
             }
             else if ((Input.GetKeyDown(KeyCode.W) || Manager.Instance.moveDir == Manager.SwipeStates.Up) && Manager.Instance.obstacleSpeed != Manager.Instance.slowSpeed)
             {
+                ShowBoosstMessage = false;
                 em.enabled = true;
                 cameraFollow.currentState = CameraFollow.CameraStates.startSendFar;
                 Manager.Instance.obstacleSpeed = Manager.Instance.fastSpeed;

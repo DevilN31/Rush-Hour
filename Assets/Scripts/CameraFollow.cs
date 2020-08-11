@@ -23,7 +23,7 @@ public class CameraFollow : MonoBehaviour {
     void Awake()
     {
         originalPosition = transform.position;
-        Debug.Log(originalPosition);
+        //Debug.Log(originalPosition);
     }
 
 	void Update ()
@@ -131,5 +131,11 @@ public class CameraFollow : MonoBehaviour {
             }
         }
         
+    }
+
+    public void EnablePlayerMovement()
+    {
+        LevelProgress.Instance.CanStartDriving = true;
+        LevelProgress.Instance.SwipeToStart.gameObject.SetActive(true);
     }
 }
