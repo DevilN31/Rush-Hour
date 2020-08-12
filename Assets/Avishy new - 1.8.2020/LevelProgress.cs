@@ -48,6 +48,8 @@ public class LevelProgress : MonoBehaviour
     public bool CanStartDriving = false;
 
     public bool GamePaused;
+    bool unpauseBoost;
+    bool unpauseBrake;
 
     private void Awake()
     {
@@ -101,39 +103,59 @@ public class LevelProgress : MonoBehaviour
             LevelBarMultiplier /= 2;
             multiplyBarMultiplier = false;
         }
-
-        if (LevelNumber == 1 && PlayerControl.ShowBoosstMessage)
+        #region First level tutorial
+        if (LevelNumber == 1)
         {
-            if (LevelProgressSlider.value >= 0.3f)
+            if (PlayerControl.ShowBoosstMessage)
             {
-                SwipeUpToBoost.gameObject.SetActive(true);
-                Time.timeScale = 0;
-                GamePaused = true;
+                if (LevelProgressSlider.value >= 0.3f)
+                {
+                    SwipeUpToBoost.gameObject.SetActive(true);
+                    Time.timeScale = 0;
+                    GamePaused = true;
+                    unpauseBoost = true;
+                    Debug.Log("Show boost");
+
+                }
+            }
+            else
+            {
+                if (unpauseBoost)
+                {
+                    SwipeUpToBoost.gameObject.SetActive(false);
+                    Time.timeScale = 1;
+                    GamePaused = false;
+                    unpauseBoost = false;
+                    Debug.Log("Hide boost");
+
+                }
+            }
+
+            if (PlayerControl.ShowBrakeMessage)
+            {
+                if (LevelProgressSlider.value >= 0.7f)
+                {
+                    SwipeDownToBrake.gameObject.SetActive(true);
+                    Time.timeScale = 0;
+                    GamePaused = true;
+                    unpauseBrake = true;
+                    Debug.Log("Show brake");
+                }
+            }
+            else
+            {
+                if (unpauseBrake)
+                {
+                    SwipeDownToBrake.gameObject.SetActive(false);
+                    Time.timeScale = 1;
+                    GamePaused = false;
+                    unpauseBrake = false;
+                    Debug.Log("Hide brake");
+
+                }
             }
         }
-        else
-        {
-            SwipeUpToBoost.gameObject.SetActive(false);
-            Time.timeScale = 1;
-            GamePaused = false;
-        }
-
-        if (LevelNumber == 1 && PlayerControl.ShowBrakeMessage)
-        {
-            if (LevelProgressSlider.value >= 0.7f)
-            {
-                SwipeDownToBrake.gameObject.SetActive(true);
-                Time.timeScale = 0;
-                GamePaused = true;
-            }
-        }
-        else
-        {
-            SwipeDownToBrake.gameObject.SetActive(false);
-            Time.timeScale = 1;
-            GamePaused = false;
-        }
-
+        #endregion
     }
 
     public void StartNextLevel(bool restart) ////// CHANGE ALL LEVEL VALUES HERE SUCH AS DIFFICULTY.
@@ -194,7 +216,7 @@ public class LevelProgress : MonoBehaviour
     public void FinishLevel()
     {
         CanStartDriving = false;
-
+        SoundManager.Instance.StopMusic();
         Manager.Instance.currentGameState = Manager.GameStates.GameOver;
         LevelProgressSlider.gameObject.SetActive(false);
         LevelNum.gameObject.SetActive(false);

@@ -319,28 +319,38 @@ public class PlayerControl : MonoBehaviour {
 
             if (Input.GetKeyDown(KeyCode.S) || Manager.Instance.moveDir == Manager.SwipeStates.Down)
             {
-                ShowBrakeMessage = false;
-                StartCoroutine(carBehind.Delay());
-                if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
+                if (LevelProgress.Instance.GamePaused && !ShowBoosstMessage || !LevelProgress.Instance.GamePaused)
+                    ShowBrakeMessage = false;
+
+                if (!LevelProgress.Instance.GamePaused)
                 {
                     StartCoroutine(carBehind.Delay());
-                    TakeHit();
+                    if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
+                    {
+                        StartCoroutine(carBehind.Delay());
+                        TakeHit();
+                    }
+                    cameraFollow.currentState = CameraFollow.CameraStates.startBringNear;
+                    Manager.Instance.obstacleSpeed = Manager.Instance.slowSpeed;
+                    Manager.Instance.buildingsSpeed = Manager.Instance.buildingSlowSpeed;
+                    SoundManager.Instance.PlayBrakeSound();
+                    SoundManager.Instance.PlaySwipeUpDown();
+                    Manager.Instance.moveDir = Manager.SwipeStates.Idle;
                 }
-                cameraFollow.currentState = CameraFollow.CameraStates.startBringNear;
-                Manager.Instance.obstacleSpeed = Manager.Instance.slowSpeed;
-                Manager.Instance.buildingsSpeed = Manager.Instance.buildingSlowSpeed;
-                SoundManager.Instance.PlayBrakeSound();
-                SoundManager.Instance.PlaySwipeUpDown();
-                Manager.Instance.moveDir = Manager.SwipeStates.Idle;
             }
             else if ((Input.GetKeyDown(KeyCode.W) || Manager.Instance.moveDir == Manager.SwipeStates.Up) && Manager.Instance.obstacleSpeed != Manager.Instance.slowSpeed)
             {
+                if(LevelProgress.Instance.GamePaused && ShowBoosstMessage || !LevelProgress.Instance.GamePaused)
                 ShowBoosstMessage = false;
-                em.enabled = true;
-                cameraFollow.currentState = CameraFollow.CameraStates.startSendFar;
-                Manager.Instance.obstacleSpeed = Manager.Instance.fastSpeed;
-                SoundManager.Instance.PlaySwipeUpDown();
-                Manager.Instance.moveDir = Manager.SwipeStates.Idle;
+
+                if (!LevelProgress.Instance.GamePaused)
+                {
+                    em.enabled = true;
+                    cameraFollow.currentState = CameraFollow.CameraStates.startSendFar;
+                    Manager.Instance.obstacleSpeed = Manager.Instance.fastSpeed;
+                    SoundManager.Instance.PlaySwipeUpDown();
+                    Manager.Instance.moveDir = Manager.SwipeStates.Idle;
+                }
             }
 
             else if (Input.GetKeyDown(KeyCode.A) || Manager.Instance.moveDir == Manager.SwipeStates.Left)

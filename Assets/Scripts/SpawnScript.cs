@@ -138,28 +138,30 @@ public class SpawnScript : MonoBehaviour
     }
     IEnumerator SpawnObstacles(float spawnTimer) // NATI: new control function
     {
-        int numberOfLanes = Random.Range(0, allLanes.Count);  //Randon number of cars spawn
-        for (int i = 0; i< numberOfLanes; i++)
+        if (allLanes.Count > 0)
         {
-            int randomObstacle = Random.Range(0, allObstaclesPrefabs.Length);
-            int randomLane = Random.Range(0, allLanes.Count); //Randon number of lanes to select where obstacles will spawn
+            int numberOfLanes = Random.Range(0, allLanes.Count);  //Randon number of cars spawn
+            for (int i = 0; i < numberOfLanes; i++)
+            {
+                int randomObstacle = Random.Range(0, allObstaclesPrefabs.Length);
+                int randomLane = Random.Range(0, allLanes.Count); //Randon number of lanes to select where obstacles will spawn
 
-            Debug.Log(randomLane);
-            if ((allLanes[randomLane].childCount == 0))
-            {
-                Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
-            }
-            else
-            {
-                if (Vector3.Distance(allLanes[randomLane].position, allLanes[randomLane].GetChild(allLanes[randomLane].childCount - 1).transform.position) > DistanceToSpawnObstacle)
+                Debug.Log(randomLane);
+                if ((allLanes[randomLane].childCount == 0))
                 {
                     Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
                 }
+                else
+                {
+                    if (Vector3.Distance(allLanes[randomLane].position, allLanes[randomLane].GetChild(allLanes[randomLane].childCount - 1).transform.position) > DistanceToSpawnObstacle)
+                    {
+                        Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
+                    }
+                }
+
+                yield return new WaitForSeconds(spawnTimer);
             }
-
-            yield return new WaitForSeconds(spawnTimer);
         }
-
         canSpawn = true;
         yield return null;
     }
