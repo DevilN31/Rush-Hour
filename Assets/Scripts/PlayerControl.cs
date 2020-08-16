@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameAnalyticsSDK;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -124,7 +125,7 @@ public class PlayerControl : MonoBehaviour {
             CollideLoseGame();
             StartCoroutine(GameOverDelay());
 
-            ShowGameOver();
+           // ShowGameOver();
         }
     }
 
@@ -158,7 +159,7 @@ public class PlayerControl : MonoBehaviour {
 
     IEnumerator GameOverDelay()
     {
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(1.0f);
         
         ShowGameOver();
 
@@ -210,9 +211,9 @@ public class PlayerControl : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         isShaking = false;
     }
-    void ShowGameOver()
+    void ShowGameOver() // Add game analytics
     {
-        
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level " + LevelProgress.Instance.LevelNumber.ToString());
         //Manager.Instance.ShowInterstitial();
         healthCanvas.transform.GetChild(0).gameObject.SetActive(false);
         healthCanvas.transform.GetChild(1).gameObject.SetActive(false);

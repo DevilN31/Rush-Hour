@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameAnalyticsSDK;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -160,6 +161,8 @@ public class LevelProgress : MonoBehaviour
 
     public void StartNextLevel(bool restart) ////// CHANGE ALL LEVEL VALUES HERE SUCH AS DIFFICULTY.
     {
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "Level " + LevelNumber.ToString());
+
         if (!EnvironmentControl.instance.GameFinished)
         {
             NumLaneOrFinishedGame();
@@ -215,6 +218,7 @@ public class LevelProgress : MonoBehaviour
 
     public void FinishLevel()
     {
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete,"Level " + LevelNumber.ToString());
         CanStartDriving = false;
         SoundManager.Instance.StopMusic();
         Manager.Instance.currentGameState = Manager.GameStates.GameOver;

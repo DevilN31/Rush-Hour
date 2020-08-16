@@ -5,6 +5,7 @@ using System.Collections.Generic;
 //using UnityEngine.SocialPlatforms.GameCenter;
 //using GooglePlayGames;
 using UnityEngine.SocialPlatforms;
+using GameAnalyticsSDK;
 
 public class Manager : Singleton<Manager>
 {
@@ -154,6 +155,11 @@ public class Manager : Singleton<Manager>
     //    else
     //        Debug.Log("Failed to authenticate");
     //}
+
+    private void Start()
+    {
+        GameAnalytics.Initialize();
+    }
 
     void Update()
     {

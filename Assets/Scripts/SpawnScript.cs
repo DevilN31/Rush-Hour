@@ -146,7 +146,6 @@ public class SpawnScript : MonoBehaviour
                 int randomObstacle = Random.Range(0, allObstaclesPrefabs.Length);
                 int randomLane = Random.Range(0, allLanes.Count); //Randon number of lanes to select where obstacles will spawn
 
-                Debug.Log(randomLane);
                 if ((allLanes[randomLane].childCount == 0))
                 {
                     Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
