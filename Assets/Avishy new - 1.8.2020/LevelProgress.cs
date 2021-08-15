@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameAnalyticsSDK;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,8 +8,15 @@ public class LevelProgress : MonoBehaviour
 {
     public static LevelProgress Instance;
 
+    public Text SwipeToStart;
+    public Text SwipeUpToBoost;
+    public Text SwipeDownToBrake;
+
+    public Button RestartLevelButton;
     public Slider LevelProgressSlider;
     public GameObject gameOverCanvas; // NATI - added this to be turned off after game reset
+    public GameObject PauseGameCanvas; 
+
     public Image FadeImage;
 
     public float Timeforlevel;
@@ -28,26 +36,50 @@ public class LevelProgress : MonoBehaviour
     public Animator EndLevelCamAnim;
 
     public int LevelNumber = 0;
+    public Text LevelNum;
+    public GameObject PauseGameButton;
 
     private float FadeJumpIntervals = 0.01f;
 
-
     public GameObject MainMenuCanvas; // NATI - Where do you use this?
+    public GameObject GameFinishedCanvas;
+
     bool multiplyBarMultiplier; // NATI
+
+    public bool CanStartDriving = false;
+
+    public bool GamePaused;
+    bool unpauseBoost;
+    bool unpauseBrake;
 
     private void Awake()
     {
+        if(PlayerPrefs.HasKey("Level Number"))
+        {
+            LevelNumber = PlayerPrefs.GetInt("Level Number");
+            LevelNum.text = "Level: " + LevelNumber.ToString();
+        }
+        else
+        {
+            PlayerPrefs.SetInt("Level Number", LevelNumber);
+            LevelNum.text = "Level: " + LevelNumber.ToString();
+        }
+
+        if(PlayerPrefs.HasKey("number Of Lanes"))
+        {
+            SpawnScript.instance.numberOfLanes = PlayerPrefs.GetInt("number Of Lanes");
+        }
         Instance = this;
     }
 
     private void Start()
     {
         EndLevelCamAnim.Play("Base Layer.StartLevelAnim", 0);
-
-        StartNextLevel();
+        GameFinishedCanvas.SetActive(false);
+        //CanStartDriving = true;
+        StartNextLevel(false);
     }
 
-   
     void Update()
     {
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
@@ -72,15 +104,95 @@ public class LevelProgress : MonoBehaviour
             LevelBarMultiplier /= 2;
             multiplyBarMultiplier = false;
         }
+        #region First level tutorial
+        if (LevelNumber == 1)
+        {
+            if (PlayerControl.ShowBoosstMessage)
+            {
+                if (LevelProgressSlider.value >= 0.3f)
+                {
+                    SwipeUpToBoost.gameObject.SetActive(true);
+                    Time.timeScale = 0;
+                    GamePaused = true;
+                    unpauseBoost = true;
+                    Debug.Log("Show boost");
+
+                }
+            }
+            else
+            {
+                if (unpauseBoost)
+                {
+                    SwipeUpToBoost.gameObject.SetActive(false);
+                    Time.timeScale = 1;
+                    GamePaused = false;
+                    unpauseBoost = false;
+                    Debug.Log("Hide boost");
+
+                }
+            }
+
+            if (PlayerControl.ShowBrakeMessage)
+            {
+                if (LevelProgressSlider.value >= 0.7f)
+                {
+                    SwipeDownToBrake.gameObject.SetActive(true);
+                    Time.timeScale = 0;
+                    GamePaused = true;
+                    unpauseBrake = true;
+                    Debug.Log("Show brake");
+                }
+            }
+            else
+            {
+                if (unpauseBrake)
+                {
+                    SwipeDownToBrake.gameObject.SetActive(false);
+                    Time.timeScale = 1;
+                    GamePaused = false;
+                    unpauseBrake = false;
+                    Debug.Log("Hide brake");
+
+                }
+            }
+        }
+        #endregion
     }
 
-    public void StartNextLevel() ////// CHANGE ALL LEVEL VALUES HERE SUCH AS DIFFICULTY.
+    public void StartNextLevel(bool restart) ////// CHANGE ALL LEVEL VALUES HERE SUCH AS DIFFICULTY.
     {
-        LevelNumber++;
-        SpawnScript.instance.SpawnLanes(); 
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "Level " + LevelNumber.ToString());
 
-        if (LevelNumber % 3 == 0) // NATI - change difficulty every 3rd level
-            SpawnScript.instance.UpdateWaitTime();
+        if (!EnvironmentControl.instance.GameFinished)
+        {
+            NumLaneOrFinishedGame();
+        }
+
+        if (!restart)
+        {
+            if (EnvironmentControl.instance.GameFinished)
+            {
+                //LevelNumber = Random.Range(0, 12);
+
+                Timeforlevel = Random.Range(25, 45);
+                Debug.Log(LevelNumber);
+
+                SpawnScript.instance.waitForSpawn = Random.Range(0.3f, 0.7f);
+                Debug.Log(SpawnScript.instance.waitForSpawn);
+                PlayerPrefs.SetFloat("Wait For Spawn", SpawnScript.instance.waitForSpawn);
+
+                SpawnScript.instance.numberOfLanes = Random.Range(3, 6);
+                EnvironmentControl.instance.RandomizeBuilding = Random.Range(1, 5);
+            }
+
+            if (LevelNumber % 3 == 0) // NATI - change difficulty every 3rd level
+                SpawnScript.instance.UpdateWaitTime();
+        }
+
+
+        PlayerControl.CanBeHit = true;
+        SpawnScript.instance.SpawnLanes();
+
 
 
         // Instantiate(Manager.Instance.allCarPrefabs[Manager.Instance.currentCar]);
@@ -99,40 +211,91 @@ public class LevelProgress : MonoBehaviour
         //Manager.Instance.scoreText.gameObject.SetActive(true);
 
         EndLevelCamAnim.Play("Base Layer.StartLevelAnim", 0);
-
-        Debug.Log("Check");
-
+        //Debug.Log("Check");
         Timer = 0;
         LevelProgressSlider.value = 0;
     }
 
     public void FinishLevel()
     {
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete,"Level " + LevelNumber.ToString());
+        CanStartDriving = false;
+        SoundManager.Instance.StopMusic();
         Manager.Instance.currentGameState = Manager.GameStates.GameOver;
-
-        StartCoroutine(FadeNextLevel());
+        LevelProgressSlider.gameObject.SetActive(false);
+        LevelNum.gameObject.SetActive(false);
+        PauseGameButton.SetActive(false);
+        StartCoroutine(FadeNextLevel(false));
     }
 
-
-    public IEnumerator FadeNextLevel()
+    public IEnumerator FadeNextLevel(bool restart)
     {
-        EndLevelCamAnim.Play("Base Layer.EndLevelAnim", 0);
+        if (!restart)
+        {
+            LevelNumber++;
+            PlayerPrefs.SetInt("Level Number", LevelNumber);
+            LevelNum.text = "Level: " + LevelNumber.ToString();
 
-        yield return new WaitForSeconds(TimeStartFadein);
+            EndLevelCamAnim.Play("Base Layer.EndLevelAnim", 0);
 
-        Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
+            yield return new WaitForSeconds(TimeStartFadein);
 
-        StartCoroutine(FadeIn());
+            Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
 
-        yield return new WaitForSeconds(TimeStartFadeout);
+            StartCoroutine(FadeIn());
 
-        StartCoroutine(FadeOut());
+            yield return new WaitForSeconds(TimeStartFadeout);
 
-        yield return new WaitForSeconds(TimeCallStartLevel);
+            StartCoroutine(FadeOut());
 
+            yield return new WaitForSeconds(TimeCallStartLevel);
 
-        StartNextLevel();
-        gameOverCanvas.SetActive(false);
+            LevelProgressSlider.gameObject.SetActive(true);
+
+            //if (EnvironmentControl.instance.GameFinished)
+            //{
+            // LevelNum.gameObject.SetActive(false);
+            //}
+            //else
+            //{
+            LevelNum.gameObject.SetActive(true);
+            PauseGameButton.SetActive(true);
+            //}
+
+            StartNextLevel(false);
+            gameOverCanvas.SetActive(false);
+        }
+        else
+        {
+            Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
+
+            StartCoroutine(FadeIn());
+
+            yield return new WaitForSeconds(TimeStartFadeout);
+
+            StartCoroutine(FadeOut());
+
+            yield return new WaitForSeconds(TimeCallStartLevel);
+
+            StartCoroutine(ClearBuildings());
+            LevelProgressSlider.gameObject.SetActive(true);
+
+            //if (EnvironmentControl.instance.GameFinished)
+            //{
+            //    LevelNum.gameObject.SetActive(false);
+            //}
+            //else
+            //{
+            LevelNum.gameObject.SetActive(true);
+            PauseGameButton.SetActive(true);
+            //}
+            CanStartDriving = true;
+            SwipeToStart.gameObject.SetActive(true);
+
+            StartNextLevel(true);
+            gameOverCanvas.SetActive(false);
+        }
+
     }
 
     public IEnumerator FadeIn()
@@ -151,7 +314,6 @@ public class LevelProgress : MonoBehaviour
         RestartGame();
     }
 
-
     public IEnumerator FadeOut()
     {
         Color C = FadeImage.color;
@@ -166,8 +328,6 @@ public class LevelProgress : MonoBehaviour
             FadeImage.color = C;
         }
     }
-
-
 
     public void RestartGame()
     {
@@ -191,11 +351,138 @@ public class LevelProgress : MonoBehaviour
         //Manager.Instance.currentGameState = Manager.GameStates.InGame;
     }
 
-   public IEnumerator SpawnPlayer() // NATI - added this to control player spawn here
+    public IEnumerator SpawnPlayer() // NATI - added this to control player spawn here
     {
         Instantiate(Manager.Instance.allCarPrefabs[Manager.Instance.currentCar]);
         yield return new WaitForEndOfFrame();
         Camera.main.transform.GetComponent<CameraFollow>().ResetCamera();
 
     }
+
+    IEnumerator ClearBuildings()
+    {
+        yield return null;
+
+        for (int i = 0; i < EnvironmentControl.instance.buildingsLeft.childCount; i++)
+        {
+            Destroy(EnvironmentControl.instance.buildingsLeft.GetChild(i).gameObject);
+        }
+
+        for (int i = 0; i < EnvironmentControl.instance.buildingsRight.childCount; i++)
+        {
+            Destroy(EnvironmentControl.instance.buildingsRight.GetChild(i).gameObject);
+        }
+    }
+
+    public void NumLaneOrFinishedGame()
+    {
+        if (LevelProgress.Instance.LevelNumber <= 3) // Suburb
+        {
+            Timeforlevel = 25;
+            SpawnScript.instance.numberOfLanes = 2;
+
+            PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
+
+        }
+        else if (LevelProgress.Instance.LevelNumber <= 6) // City
+        {
+
+            Timeforlevel = 30;
+            SpawnScript.instance.numberOfLanes = 4;
+
+            PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
+        }
+        else if (LevelProgress.Instance.LevelNumber <= 9) // Desert
+        {
+
+            Timeforlevel = 35;
+            SpawnScript.instance.numberOfLanes = 3;
+
+            PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
+        }
+        else if (LevelProgress.Instance.LevelNumber <= 12) // Beach
+        {
+
+            Timeforlevel = 40;
+            SpawnScript.instance.numberOfLanes = 3;
+
+            PlayerPrefs.SetInt("number Of Lanes", SpawnScript.instance.numberOfLanes);
+
+        }
+        else if (LevelProgress.Instance.LevelNumber > 12)
+        {
+            PlayerPrefs.SetInt("Finished Game", 1);
+            EnvironmentControl.instance.GameFinished = true;
+            GameFinishedCanvas.SetActive(true);
+            //LevelNumber = Random.Range(0, 12);
+            LevelProgressSlider.gameObject.SetActive(false);
+
+            LevelNum.gameObject.SetActive(false);
+            PauseGameButton.gameObject.SetActive(false);
+        }
+    }
+
+    [ContextMenu("Reset Player Prefs")]
+    public void ResetPlayerPreft()
+    {
+        PlayerPrefs.SetInt("Level Number", 1);
+        PlayerPrefs.SetInt("Finished Game", 0);
+        PlayerPrefs.SetFloat("Wait For Spawn", 1.5f);
+    }
+
+    public IEnumerator RandomizeGame()
+    {
+        Manager.Instance.currentGameState = Manager.GameStates.MainMenu;
+
+        StartCoroutine(FadeIn());
+
+        yield return new WaitForSeconds(TimeStartFadeout);
+
+        StartCoroutine(FadeOut());
+
+        yield return new WaitForSeconds(TimeCallStartLevel);
+
+        StartCoroutine(ClearBuildings());
+        LevelProgressSlider.gameObject.SetActive(true);
+
+        //if (EnvironmentControl.instance.GameFinished)
+        //{
+        //LevelNum.gameObject.SetActive(false);
+        //}
+        //else
+        //{
+        LevelNum.gameObject.SetActive(true);
+        PauseGameButton.SetActive(true);
+
+        //}
+
+        StartNextLevel(true);
+        GameFinishedCanvas.SetActive(false);
+    }
+
+    public void ConnectToRandomizer()
+    {
+        StartCoroutine(RandomizeGame());
+    }
+
+
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+        GamePaused = true;
+        PauseGameCanvas.SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+        GamePaused = false;
+        PauseGameCanvas.SetActive(false);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }

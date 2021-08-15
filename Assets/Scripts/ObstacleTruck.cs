@@ -34,8 +34,8 @@ public class ObstacleTruck : MonoBehaviour {
     public Texture blueTexture;
     public Texture redTexture;
 
-    public float minTime = 20.0f;
-    public float maxTime = 30.0f;
+    public float minTime = 10.0f;
+    public float maxTime = 20.0f;
 
     public float resetDistance = 130.0f;
     public float initialSpawnZ = -38.0f;
@@ -49,7 +49,7 @@ public class ObstacleTruck : MonoBehaviour {
     public void SetInitParameters()
     {
         currentState = TruckStates.initiateSequence;
-        currentLane = Random.Range(0, SpawnScript.instance.allLanes.Count - 1);
+        currentLane = Random.Range(0, SpawnScript.instance.allLanes.Count);
         currentObstacle = Random.Range(0, 2);
         truckSpeed = 0.4f;
 
@@ -127,72 +127,71 @@ public class ObstacleTruck : MonoBehaviour {
             currentObstacle = 0;
         }
 
-        if (Manager.Instance.currentGameState == Manager.GameStates.InGame || Manager.Instance.currentGameState == Manager.GameStates.GameOver)
+        if (SpawnScript.instance.allLanes.Count > 2)
         {
-           
-            blinkRed = (currentState == TruckStates.initiateSequence) || (currentState == TruckStates.startTruckMovement);
-            moveTruck = (currentState == TruckStates.startTruckMovement) || (currentState == TruckStates.stopRedBlinking);
-
-            frameCount++;
-            if (blinkRed && frameCount % 3 == 0)
+            if (Manager.Instance.currentGameState == Manager.GameStates.InGame || Manager.Instance.currentGameState == Manager.GameStates.GameOver)
             {
-                redLine.gameObject.SetActive(!redLine.gameObject.activeSelf);
-                frameCount = 0;
-            }
 
-            if (blinkRed)
-            {
-                if (currentObstacle == 0)
-                    SoundManager.Instance.PlayAmbulanceSiren();
-                else if (currentObstacle == 1)
-                    SoundManager.Instance.PlayPoliceSiren();
-            }
+                blinkRed = (currentState == TruckStates.initiateSequence) || (currentState == TruckStates.startTruckMovement);
+                moveTruck = (currentState == TruckStates.startTruckMovement) || (currentState == TruckStates.stopRedBlinking);
 
-            if (blinkRed)
-            {
-                waitTime += Time.deltaTime;
-                if (waitTime > 2.5f)
+                frameCount++;
+                if (blinkRed && frameCount % 3 == 0)
                 {
-                    currentState = TruckStates.startTruckMovement;
-                    truckSpeed = 0.3f ;
-                    waitTime = 0;
+                    redLine.gameObject.SetActive(!redLine.gameObject.activeSelf);
+                    frameCount = 0;
                 }
-            }
 
-            if (moveTruck)
-            {
-                if (currentObstacle == 0)
+                if (blinkRed)
                 {
-                    fireTruck.transform.Translate(0, 0, truckSpeed);
+                    if (currentObstacle == 0)
+                        SoundManager.Instance.PlayAmbulanceSiren();
+                    else if (currentObstacle == 1)
+                        SoundManager.Instance.PlayPoliceSiren();
                 }
-                else
+
+                if (blinkRed)
                 {
-                    policeCar.transform.Translate(0, 0, truckSpeed);
+                    waitTime += Time.deltaTime;
+                    if (waitTime > 2.5f)
+                    {
+                        currentState = TruckStates.startTruckMovement;
+                        truckSpeed = 0.3f;
+                        waitTime = 0;
+                    }
                 }
 
-                if ((fireTruck.transform.position.z > 0.0f || policeCar.transform.position.z > 0.0f ) && currentState == TruckStates.startTruckMovement)
-                {                   
-                    currentState = TruckStates.stopRedBlinking;
-                    truckSpeed = 0.3f;
-                    redLine.gameObject.SetActive(false);
+                if (moveTruck)
+                {
+                    if (currentObstacle == 0)
+                    {
+                        fireTruck.transform.Translate(0, 0, truckSpeed);
+                    }
+                    else
+                    {
+                        policeCar.transform.Translate(0, 0, truckSpeed);
+                    }
+
+                    if ((fireTruck.transform.position.z > 0.0f || policeCar.transform.position.z > 0.0f) && currentState == TruckStates.startTruckMovement)
+                    {
+                        currentState = TruckStates.stopRedBlinking;
+                        truckSpeed = 0.3f;
+                        redLine.gameObject.SetActive(false);
+                    }
+                }
+
+                if ((fireTruck.transform.position.z > resetDistance || policeCar.transform.position.z > resetDistance))
+                {
+                    if (currentObstacle == 0)
+                        fireTruck.transform.position = new Vector3(0, this.transform.position.y, initialSpawnZ);
+                    else
+                        policeCar.transform.position = new Vector3(0, this.transform.position.y, initialSpawnZ);
+
+                    GameObject.Find("GameController").GetComponent<SpawnScript>().timeElapsed = 0.0f;
+                    currentState = TruckStates.idle;
+                    spawnTime = Random.Range(minTime, maxTime);
                 }
             }
-
-            if ((fireTruck.transform.position.z > resetDistance || policeCar.transform.position.z > resetDistance))
-            {
-                if (currentObstacle == 0)
-                    fireTruck.transform.position = new Vector3(0, this.transform.position.y, initialSpawnZ);
-                else
-                    policeCar.transform.position = new Vector3(0, this.transform.position.y, initialSpawnZ);
-
-                GameObject.Find("GameController").GetComponent<SpawnScript>().timeElapsed = 0.0f;
-                currentState = TruckStates.idle;
-                spawnTime = Random.Range(minTime , maxTime);
-            }
-
         }
-        
-	}
-
-
+    }
 }

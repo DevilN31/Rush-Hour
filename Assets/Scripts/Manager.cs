@@ -5,6 +5,7 @@ using System.Collections.Generic;
 //using UnityEngine.SocialPlatforms.GameCenter;
 //using GooglePlayGames;
 using UnityEngine.SocialPlatforms;
+using GameAnalyticsSDK;
 
 public class Manager : Singleton<Manager>
 {
@@ -97,9 +98,6 @@ public class Manager : Singleton<Manager>
         Down
     }
 
-   
-
-
     void Awake()
     {
         currentCar = PlayerPrefs.GetInt("currentCar", 0);
@@ -158,6 +156,11 @@ public class Manager : Singleton<Manager>
     //        Debug.Log("Failed to authenticate");
     //}
 
+    private void Start()
+    {
+        GameAnalytics.Initialize();
+    }
+
     void Update()
     {
         if (Manager.Instance.currentGameState == Manager.GameStates.InGame)
@@ -201,7 +204,6 @@ public class Manager : Singleton<Manager>
         }
 
     }
-
 
     void ChangeFog()
     {
@@ -269,6 +271,12 @@ public class Manager : Singleton<Manager>
         }
         gameOverCanvas.GetComponent<GameOverMenu>().UpdateScore();
         //currentGameState = GameStates.GameOver;
+
+        LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(false);
+        LevelProgress.Instance.LevelNum.gameObject.SetActive(false);
+        LevelProgress.Instance.PauseGameButton.SetActive(false);
+        LevelProgress.Instance.RestartLevelButton.interactable = true;
+        LevelProgress.Instance.CanStartDriving = false;
 
         gameOverCanvas.gameObject.SetActive(true);
     }

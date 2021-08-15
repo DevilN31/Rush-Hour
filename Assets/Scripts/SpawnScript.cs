@@ -45,20 +45,18 @@ public class SpawnScript : MonoBehaviour
         if (instance != null)
             Destroy(this);
 
+        if (PlayerPrefs.HasKey("Wait For Spawn"))
+        {
+            waitForSpawn = PlayerPrefs.GetFloat("Wait For Spawn");
+        }
+        
         instance = this;
 
         canSpawn = true;
-
-    }
-
-    private void Start()
-    {
-        
     }
 
     void Update()
-    {
-        
+    {       
         //if(addDifficulty) // NATI: Adds Difficulty
         //{
             //if(defaultSpawnTime > 0.4) /// Limit
@@ -127,35 +125,42 @@ public class SpawnScript : MonoBehaviour
     public void UpdateWaitTime()
     {
         if(waitForSpawn > 0.2f)
-        waitForSpawn -= 0.2f;
+        waitForSpawn -= 0.3f;
 
-        Debug.Log("Add defficulty");
+        if (waitForSpawn < 0.3f)
+        {
+            waitForSpawn = 0.3f;
+        }
+            PlayerPrefs.SetFloat("Wait For Spawn", waitForSpawn);
+        //Debug.Log("Add defficulty");
 
        // DoOnce = false;
     }
     IEnumerator SpawnObstacles(float spawnTimer) // NATI: new control function
     {
-        int numberOfLanes = Random.Range(0, allLanes.Count);  //Randon number of cars spawn
-        for (int i = 0; i< numberOfLanes; i++)
+        if (allLanes.Count > 0)
         {
-            int randomObstacle = Random.Range(0, allObstaclesPrefabs.Length);
-            int randomLane = Random.Range(0, allLanes.Count); //Randon number of lanes to select where obstacles will spawn
+            int numberOfLanes = Random.Range(0, allLanes.Count);  //Randon number of cars spawn
+            for (int i = 0; i < numberOfLanes; i++)
+            {
+                int randomObstacle = Random.Range(0, allObstaclesPrefabs.Length);
+                int randomLane = Random.Range(0, allLanes.Count); //Randon number of lanes to select where obstacles will spawn
 
-            if ((allLanes[randomLane].childCount == 0))
-            {
-                Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
-            }
-            else
-            {
-                if (Vector3.Distance(allLanes[randomLane].position, allLanes[randomLane].GetChild(allLanes[randomLane].childCount - 1).transform.position) > DistanceToSpawnObstacle)
+                if ((allLanes[randomLane].childCount == 0))
                 {
                     Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
                 }
+                else
+                {
+                    if (Vector3.Distance(allLanes[randomLane].position, allLanes[randomLane].GetChild(allLanes[randomLane].childCount - 1).transform.position) > DistanceToSpawnObstacle)
+                    {
+                        Instantiate(allObstaclesPrefabs[randomObstacle], allLanes[randomLane].position, Quaternion.identity, allLanes[randomLane]);
+                    }
+                }
+
+                yield return new WaitForSeconds(spawnTimer);
             }
-
-            yield return new WaitForSeconds(spawnTimer);
         }
-
         canSpawn = true;
         yield return null;
     }

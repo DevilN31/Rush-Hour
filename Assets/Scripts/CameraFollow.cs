@@ -23,7 +23,7 @@ public class CameraFollow : MonoBehaviour {
     void Awake()
     {
         originalPosition = transform.position;
-        Debug.Log(originalPosition);
+        //Debug.Log(originalPosition);
     }
 
 	void Update ()
@@ -75,7 +75,7 @@ public class CameraFollow : MonoBehaviour {
             }
             else if (currentState == CameraStates.sendFar)
             {
-                Vector3 destination = new Vector3(0, 4.74f, 0.0f);
+                Vector3 destination = new Vector3(0, 9f, 0.0f);
                 transform.position = Vector3.Lerp(transform.position, new Vector3(target.position.x, destination.y, transform.position.z), Time.deltaTime * 5);
             }
         }
@@ -131,5 +131,11 @@ public class CameraFollow : MonoBehaviour {
             }
         }
         
+    }
+
+    public void EnablePlayerMovement()
+    {
+        LevelProgress.Instance.CanStartDriving = true;
+        LevelProgress.Instance.SwipeToStart.gameObject.SetActive(true);
     }
 }

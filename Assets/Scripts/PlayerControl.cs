@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameAnalyticsSDK;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -31,11 +32,14 @@ public class PlayerControl : MonoBehaviour {
     GameObject healthCanvas;
 
     private bool isGameOver = false;
-
+    public static bool CanBeHit;
     //public GameObject redFlash;
     //GameObject spawnedRedFlash;
 
     bool isShaking = false;
+
+    public static bool ShowBoosstMessage = true;
+    public static bool ShowBrakeMessage = true;
 
     CarBehind carBehind;
     ParticleSystem accidentSmoke;
@@ -49,6 +53,7 @@ public class PlayerControl : MonoBehaviour {
 
     void Start()
     {
+        CanBeHit = true;
         RB = GetComponent<Rigidbody>();
         RB.constraints = RigidbodyConstraints.FreezeAll;
 
@@ -85,7 +90,9 @@ public class PlayerControl : MonoBehaviour {
         cameraFollow.ResetCamera();
         
         allLanes = SpawnScript.instance.allLanes;
+
         currentLane = allLanes.Count / 2;
+
         transform.position = new Vector3(allLanes[currentLane].position.x,transform.position.y,transform.position.z);
 
     }
@@ -118,7 +125,7 @@ public class PlayerControl : MonoBehaviour {
             CollideLoseGame();
             StartCoroutine(GameOverDelay());
 
-            ShowGameOver();
+           // ShowGameOver();
         }
     }
 
@@ -152,9 +159,10 @@ public class PlayerControl : MonoBehaviour {
 
     IEnumerator GameOverDelay()
     {
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(1.0f);
         
         ShowGameOver();
+
         yield return new WaitForSeconds(0.5f);
 
         Destroy(gameObject);
@@ -165,7 +173,10 @@ public class PlayerControl : MonoBehaviour {
     {
         if (other.gameObject.tag == "Obstacle" && !other.gameObject.transform.GetComponent<ObstacleScript>().hasCollided == true)
         {
-            TakeHit();
+            if (CanBeHit)
+            {
+                TakeHit();
+            }
             other.gameObject.transform.GetComponent<ObstacleScript>().hasCollided = true;
             other.gameObject.transform.GetComponent<Rigidbody>().useGravity = true;
         }
@@ -200,9 +211,9 @@ public class PlayerControl : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         isShaking = false;
     }
-    void ShowGameOver()
+    void ShowGameOver() // Add game analytics
     {
-        
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level " + LevelProgress.Instance.LevelNumber.ToString());
         //Manager.Instance.ShowInterstitial();
         healthCanvas.transform.GetChild(0).gameObject.SetActive(false);
         healthCanvas.transform.GetChild(1).gameObject.SetActive(false);
@@ -275,6 +286,8 @@ public class PlayerControl : MonoBehaviour {
             LevelProgress.Instance.MainMenuCanvas.SetActive(false); //// ADDED BY AVISHY - 1.8.2020
 
             LevelProgress.Instance.LevelProgressSlider.gameObject.SetActive(true); //// ADDED BY AVISHY - 1.8.2020
+            LevelProgress.Instance.LevelNum.gameObject.SetActive(true);
+            LevelProgress.Instance.PauseGameButton.SetActive(true);
 
             LevelProgress.Instance.LevelProgressSlider.value = 0; //// ADDED BY AVISHY - 1.8.2020
 
@@ -290,12 +303,12 @@ public class PlayerControl : MonoBehaviour {
 
     void Update()
     {
-        if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu && !Manager.Instance.inShop)
+        if (Manager.Instance.currentGameState == Manager.GameStates.MainMenu && !Manager.Instance.inShop && LevelProgress.Instance.CanStartDriving)
         {
             if ((Input.GetMouseButtonUp(0) && Input.mousePosition.y > 200 && Input.mousePosition.y < Screen.height - 200 ))
             {
                 //LevelProgress.Instance.StartNextLevel(); //// ADDED BY AVISHY - 1.8.2020
-
+                LevelProgress.Instance.SwipeToStart.gameObject.SetActive(false);
                 StartGame();
             }
         }
@@ -307,25 +320,38 @@ public class PlayerControl : MonoBehaviour {
 
             if (Input.GetKeyDown(KeyCode.S) || Manager.Instance.moveDir == Manager.SwipeStates.Down)
             {
-                if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
+                if (LevelProgress.Instance.GamePaused && !ShowBoosstMessage || !LevelProgress.Instance.GamePaused)
+                    ShowBrakeMessage = false;
+
+                if (!LevelProgress.Instance.GamePaused)
                 {
                     StartCoroutine(carBehind.Delay());
-                    TakeHit();
+                    if (cameraFollow.currentState == CameraFollow.CameraStates.bringNear)
+                    {
+                        StartCoroutine(carBehind.Delay());
+                        TakeHit();
+                    }
+                    cameraFollow.currentState = CameraFollow.CameraStates.startBringNear;
+                    Manager.Instance.obstacleSpeed = Manager.Instance.slowSpeed;
+                    Manager.Instance.buildingsSpeed = Manager.Instance.buildingSlowSpeed;
+                    SoundManager.Instance.PlayBrakeSound();
+                    SoundManager.Instance.PlaySwipeUpDown();
+                    Manager.Instance.moveDir = Manager.SwipeStates.Idle;
                 }
-                cameraFollow.currentState = CameraFollow.CameraStates.startBringNear;
-                Manager.Instance.obstacleSpeed = Manager.Instance.slowSpeed;
-                Manager.Instance.buildingsSpeed = Manager.Instance.buildingSlowSpeed;
-                SoundManager.Instance.PlayBrakeSound();
-                SoundManager.Instance.PlaySwipeUpDown();
-                Manager.Instance.moveDir = Manager.SwipeStates.Idle;
             }
             else if ((Input.GetKeyDown(KeyCode.W) || Manager.Instance.moveDir == Manager.SwipeStates.Up) && Manager.Instance.obstacleSpeed != Manager.Instance.slowSpeed)
             {
-                em.enabled = true;
-                cameraFollow.currentState = CameraFollow.CameraStates.startSendFar;
-                Manager.Instance.obstacleSpeed = Manager.Instance.fastSpeed;
-                SoundManager.Instance.PlaySwipeUpDown();
-                Manager.Instance.moveDir = Manager.SwipeStates.Idle;
+                if(LevelProgress.Instance.GamePaused && ShowBoosstMessage || !LevelProgress.Instance.GamePaused)
+                ShowBoosstMessage = false;
+
+                if (!LevelProgress.Instance.GamePaused)
+                {
+                    em.enabled = true;
+                    cameraFollow.currentState = CameraFollow.CameraStates.startSendFar;
+                    Manager.Instance.obstacleSpeed = Manager.Instance.fastSpeed;
+                    SoundManager.Instance.PlaySwipeUpDown();
+                    Manager.Instance.moveDir = Manager.SwipeStates.Idle;
+                }
             }
 
             else if (Input.GetKeyDown(KeyCode.A) || Manager.Instance.moveDir == Manager.SwipeStates.Left)
@@ -383,11 +409,13 @@ public class PlayerControl : MonoBehaviour {
         if(Manager.Instance.currentGameState == Manager.GameStates.GameOver)
         {
             transform.Translate(new Vector3(0, 0, 1.5f), Space.World);
-            BoxCollider[] colliders = GetComponentsInChildren<BoxCollider>();
-            foreach(BoxCollider box in colliders)
-            {
-                box.enabled = false;
-            }
+            CanBeHit = false;
+            //BoxCollider[] colliders = GetComponentsInChildren<BoxCollider>();
+            //foreach(BoxCollider box in colliders)
+            //{
+            //    box.enabled = false;
+            //}
+
         }
     }
 

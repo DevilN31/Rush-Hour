@@ -107,6 +107,7 @@ public class SoundManager : Singleton<SoundManager> {
 
     public void StopMusic()
     {
+        if(sirenAudioSource.isPlaying)
         sirenAudioSource.Stop();
         //bgMusicAudioSource.Stop();
     }
